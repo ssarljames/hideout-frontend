@@ -1,0 +1,134 @@
+<div class="main-container">
+  <nav class="navbar navbar-expand-sm bg-dark navbar-dark top-nav">
+    <button  class="btn btn-outline-secondary show-sm" (click)="$hideNav = false;"><i class="fa fa-navicon"></i> </button>
+    <a class="navbar-brand" routerLink="/dashboard"><img class="app-logo" src="assets/images/hide-out-logo-small.png" alt=""></a>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item current-time">
+          <span class="nav-link">{{ timeNow }}</span>
+        </li>
+        <li class="nav-item dropdown notification-li"  *ngIf="currentUser.is_secured" ngbDropdown (openChange)="openNotificationTab($event)">
+          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+            <i class="text-warning fa fa-bell">
+                <span class="badge badge-danger" *ngIf="unread_notifications">{{ unread_notifications }}</span>
+            </i>
+          </a>
+          <div ngbDropdownMenu  class="dropdown-menu notifications">
+            <strong><i class="fa fa-bell fa-fw"></i> Notifications</strong>
+            <br><br>
+            <div class="scrollable">
+              <table class="table">
+                <tr [ngClass]="{'unread-notification': !n.read}" *ngFor="let n of notifications" (click)="$event.preventDefault()">
+                  <td style="padding: 10px !important;">
+                    <strong style="color: #4d5761">{{ n.title }}</strong>
+                    <br><br>
+                    <img style="margin-bottom: 10px" src="{{ n.action_by_user !== null ? n.action_by_user.profile_picture_path : '/assets/images/img.png' }}" class="profile-picture rounded-circle" alt="">
+                    <div class="text-muted notification-body">
+                        <i>{{ n.body }}</i>
+                    </div>
+                    <br>
+                    <small class="text-muted pull-right"><i class="fa fa-clock-o"></i> {{ n.created_at | date: 'MMM dd, y h:m a'}}</small>
+                  </td>
+                </tr>
+                <tr *ngIf="notifications.length == 0 && !isFetchingNotification">
+                  <td class="text-muted">No Notifications</td>
+                </tr>
+                <tr *ngIf="isFetchingNotification">
+                  <td class="text-muted">Loading Notifications...</td>
+                </tr>
+            </table>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item dropdown" ngbDropdown >
+          <a class="nav-link dropdown-toggle" ngbDropdownToggle>
+            <!-- <i class="fa fa-user"></i>  -->
+            <img src="{{ currentUser.profile_picture_path }} " class="profile-picture rounded-circle" alt="">
+            {{ currentUser.fullname }}
+          </a>
+          <div ngbDropdownMenu  [ngClass]="['dropdown-menu', (currentUser.fullname.length < 10 ? 'align-10-dropdown-menu': ((currentUser.fullname.length < 15 ? 'align-15-dropdown-menu':'align-g15-dropdown-menu')) )]" aria-labelledby="navbarDropdown">
+            <a *ngIf="currentUser.role == 1" routerLink="/users" class="dropdown-item"><i class="fa fa-users"></i> Manage Users</a>
+            <a *ngIf="currentUser.role == 1" routerLink="/sms" class="dropdown-item"><i class="fa fa-envelope"></i> SMS</a>
+            <a *ngIf="currentUser.role == 1" routerLink="/configurations" class="dropdown-item"><i class="fa fa-cogs"></i> System Configuration</a>
+            <a class="dropdown-item" (click)="showChangePasswordModal(changePasswordModal)"  *ngIf="currentUser.is_secured"><i class="fa fa-edit"></i> Change Password</a>
+            <a class="dropdown-item" (click)="logout()"><i class="fa fa-sign-out"></i> Logout</a>
+          </div>
+        </li>
+      </ul>
+  </nav>
+  <div class="app-container"  *ngIf="currentUser.is_secured">
+    <div [ngClass]="['app-sidenav', ($hideNav ? 'hidden-sm':'')]"
+      (click)="($event.target.className != 'nav-container' ? ($hideNav = true) : '')">
+      <div class="nav-container main-bg">
+        <app-sidenav></app-sidenav>
+      </div>
+    </div>
+    <div class="app-content">
+        <div class="container-fluid">
+          <br>
+          <br><br>
+          <router-outlet></router-outlet>
+        </div>
+    </div>
+    <span class="text-muted" style="position: fixed; bottom: 0;left:5px;">version {{ version }}</span>
+  </div>
+  <div class="app-container padding-20px" *ngIf="!currentUser.is_secured">
+    <br><br><br>
+    <div class="row">
+      <div class="col-lg-3"></div>
+      <div class="col-lg-6  text-center">
+        <p class="text-warning">
+          <span class="fa fa-exclamation-circle" style="font-size:200px"></span> <br>
+          Your password is required to be change to more secure ones. please click the button below</p>
+        <button mat-raised-button color="primary" (click)="showChangePasswordModal(changePasswordModal)">Update Password</button>
+      </div>
+    </div>
+    <br><br><br><br>
+    <br><br><br><br>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+<ng-progress [color]="'red'" [thick]="true"></ng-progress>
+
+
+
+
+
+
+<ng-template #changePasswordModal let-modal>
+
+    <form [formGroup]="change_password_form" (ngSubmit)="updatePassword()">
+        <div class="modal-header">
+          <h4 class="modal-title">Change Password</h4>
+          <!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+        </div>
+        <div class="modal-body">
+            <mat-form-field class="full-width">
+              <input matInput type="password" autocomplete="off" name="new_password" placeholder="New Password" [formControlName]="'new_password'">
+              <mat-error *ngIf="change_password_form.controls.new_password.invalid">{{ change_password_form.controls.new_password.errors.required ? "This field is required" : change_password_form.controls.new_password.errors[0] }}</mat-error>
+            </mat-form-field>
+            <mat-form-field class="full-width">
+              <input matInput type="password" autocomplete="off" name="retype" placeholder="Retype" [formControlName]="'retype'">
+              <mat-error *ngIf="change_password_form.controls.retype.invalid">{{ change_password_form.controls.retype.errors.required ? "This field is required" : change_password_form.controls.retype.errors[0] }}</mat-error>
+            </mat-form-field>
+            <mat-form-field class="full-width">
+              <input matInput type="password"  autocomplete="off" name="old_password" placeholder="Old Password" [formControlName]="'old_password'">
+              <mat-error *ngIf="change_password_form.controls.old_password.invalid">{{ change_password_form.controls.old_password.errors.required ? "This field is required" : change_password_form.controls.old_password.errors[0] }}</mat-error>
+            </mat-form-field>
+        </div>
+        <div class="modal-footer">
+            <button type="submit" mat-raised-button color="primary">Save</button>
+            <button type="button" mat-raised-button color="basic" (click)="modal.close('Close click')">Close</button>
+        </div>
+    </form>
+  </ng-template>

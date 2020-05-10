@@ -1,0 +1,70 @@
+<mat-card *ngIf="order">
+  <mat-card-title>
+    <h2>Order {{ order.order_number }} <small *ngIf="order.status == 0" class="text-danger">(Pending)</small></h2>
+    <hr>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-lg-4" *ngIf="order.status != 0">
+        <table class="table">
+          <tr>
+            <td>Customer Cash</td>
+            <td>{{ order.customer_cash | currency: ' ' }}</td>
+          </tr>
+          <tr>
+            <td>Total Amount</td>
+            <td>{{ order.total_amount | currency: ' ' }}</td>
+          </tr>
+          <tr>
+            <td>Change</td>
+            <td>{{ (order.customer_cash - order.total_amount) | currency: ' ' }}</td>
+          </tr>
+        </table>
+      </div>
+      <div class="col-lg-4">
+        <table class="table">
+          <tr>
+            <td>Customer</td>
+            <td>{{ order.customer_id ? order.customer.name : (order.computer_station ? order.computer_station.name : order.ip_address) }}</td>
+          </tr>
+          <tr>
+            <td>Status</td>
+            <td>{{ order.status_label }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <br><br>
+
+    <table class="table ordered-meals table-hover">
+        <thead>
+          <th></th>
+          <th>Current Status</th>
+          <th>Meal</th>
+          <th>Quantity</th>
+          <th>Customer Remarks</th>
+          <th style="width: 10%;"></th>
+        </thead>
+        <tr *ngFor="let meal of order.meals" [class]="'alert alert-'+meal.pivot.status_obj.color">
+          <td>
+            <mat-checkbox [(ngModel)]="meal.selected"></mat-checkbox>
+          </td>
+          <td (click)="addAction(meal)">
+            <i [class]="meal.pivot.status_obj.icon"></i> {{ meal.pivot.status_obj.label }}
+          </td>
+          <td (click)="addAction(meal)">
+            <strong>{{ meal.name }}{{ meal.pivot.is_add_on ? ' (Add On)':'' }}</strong>
+          </td>
+          <td (click)="addAction(meal)" class="text-center">{{ meal.pivot.quantity }}</td>
+          <td (click)="addAction(meal)"><i *ngIf="meal.pivot.customer_remarks">"{{ meal.pivot.customer_remarks }}"</i></td>
+          <td (click)="addAction(meal)">
+            <!-- <button *ngIf="meal.pivot.status != 4" class="btn btn-primary" (click)="addAction(meal)"><i class="fa fa-plus"></i> Add Action</button> -->
+          </td>
+        </tr>
+    </table>
+
+    <br>
+    <span *ngIf="order.status != 0" class="text-danger clickable-underlined" (click)="deleteOrder()"><i class="fa fa-remove"></i> Discard this order?</span>  </mat-card-content>
+</mat-card>
+
+<ellipsis-loading *ngIf="!order"></ellipsis-loading>

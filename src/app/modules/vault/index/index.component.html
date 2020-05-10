@@ -1,0 +1,322 @@
+<mat-card>
+  <mat-card-title>
+    <h2>
+        <i class="fa fa-shield"></i> Vault
+      <small class="text-muted" *ngIf="_to_date">(as of {{ _to_date | date: 'MMM dd, y'  }})</small>
+      <button routerLink="/vault/create" class="pull-right" mat-raised-button color="primary"><i class="fa fa-plus"></i> New Entry</button>
+    </h2>
+  </mat-card-title>
+  <mat-card-content>
+      <div class="table-responsive">
+        <table class="table table-bordered text-center">
+          <thead>
+            <tr>
+              <th rowspan="2" style="width: 20%">Total Available Balance</th>
+              <th colspan="9">Denominations</th>
+            </tr>
+            <tr>
+              <th>1000's</th>
+              <th>500's</th>
+              <th>200's</th>
+              <th>100's</th>
+              <th>50's</th>
+              <th>20's</th>
+              <th>10's</th>
+              <th>5's</th>
+              <th>1's</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                {{ meta.current_balance?.total | currency: 'P ' }}
+              </td>
+              <td>{{ meta.current_balance?.d1000 || ' ' }}</td>
+              <td>{{ meta.current_balance?.d500 || ' '}}</td>
+              <td>{{ meta.current_balance?.d200 || ' '}}</td>
+              <td>{{ meta.current_balance?.d100 || ' '}}</td>
+              <td>{{ meta.current_balance?.d50 || ' '}}</td>
+              <td>{{ meta.current_balance?.d20 || ' '}}</td>
+              <td>{{ meta.current_balance?.d10 || ' '}}</td>
+              <td>{{ meta.current_balance?.d5 || ' '}}</td>
+              <td>{{ meta.current_balance?.d1 || ' '}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <br>
+        <br>
+
+        <p class="text-muted" *ngIf="_to_date">(as of <span *ngIf="_from_date">{{ _from_date | date: 'MMM dd, y'  }} to</span> {{ _to_date | date: 'MMM dd, y'  }})</p>
+        <table class="table table-bordered">
+          <tr>
+            <td rowspan="2" style="width: 20%">Total Expenses</td>
+            <td colspan="9">Expenses Detail</td>
+          </tr>
+          <tr>
+              <td>Food</td>
+              <td>Electricity Bill</td>
+              <td>Water Bill</td>
+              <td>Rent</td>
+              <td>Internet</td>
+              <td>Supplies</td>
+              <td>Salary</td>
+              <td>Hide Out</td>
+              <td>Others</td>
+          </tr>
+          <tr>
+            <td>{{ meta.deductions?.total | currency: ' ' }}</td>
+            <td>{{ meta.deductions?.foods ? (meta.deductions.foods | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.electricity_bill ? (meta.deductions.electricity_bill | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.water_bill ? (meta.deductions.water_bill | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.rent ? (meta.deductions.rent | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.internet ? (meta.deductions.internet | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.supplies ? (meta.deductions.supplies | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.salary ? (meta.deductions.salary | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.hideout ? (meta.deductions.hideout | currency: ' ') : '' }}</td>
+            <td>{{ meta.deductions?.others ? (meta.deductions.others | currency: ' ') : '' }}</td>
+          </tr>
+        </table>
+      </div>
+      <hr>
+      <br>
+      <div class="row">
+        <!-- <div class="col-lg-2">
+            <mat-form-field class="full-width"  *ngIf="isAdmin">
+              <input matInput autocomplete="off" placeholder="Search User" [(ngModel)]="queryParams.q" (keyup)="fetchVaultEntries()">
+            </mat-form-field>
+        </div> -->
+        <div class="col-lg-2">
+            <mat-form-field class="full-width" *ngIf="isAdmin">
+              <input matInput readonly [matDatepicker]="picker1" [(ngModel)]="_from_date" (dateChange)="fetchSummary()" [max]="today"  placeholder="From:">
+              <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+              <mat-datepicker touchUi  #picker1 disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col-lg-2">
+            <mat-form-field class="full-width" *ngIf="isAdmin">
+              <input matInput readonly [matDatepicker]="picker2" [(ngModel)]="_to_date" (dateChange)="fetchSummary()" [min]="queryParams.from_date" [max]="today" placeholder="To:">
+              <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+              <mat-datepicker touchUi  #picker2 disabled="false"></mat-datepicker>
+            </mat-form-field>
+        </div>
+        <div class="col-lg-2">
+            <mat-form-field>
+              <mat-select (selectionChange)="fetchVaultEntries()" [(ngModel)]="queryParams.type" placeholder="Type">
+                <mat-option [value]="-1">All</mat-option>
+                <mat-option *ngFor="let type of types" [value]="type.value">{{ type.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-lg-2"></div>
+        <div class="col-lg-4">
+            <mat-paginator [length]="meta.total"
+                [pageSize]="queryParams.per_page"
+                [pageSizeOptions]="[5, 10, 25, 100]"
+                (page)="pageChange($event)">
+            </mat-paginator>
+        </div>
+      </div>
+      <br>
+      <div class="table-responsive">
+        <table matSort (matSortChange)="sortData($event)" class="table  table-striped">
+          <thead>
+            <th>User</th>
+            <th mat-sort-header="created_at">Date/Time</th>
+            <!-- <th>User</th> -->
+            <th mat-sort-header="type">Type</th>
+            <th mat-sort-header="total" class="text-right">Amount</th>
+            <th class="text-center">Remarks</th>
+            <th></th>
+          </thead>
+          <tbody [@fetch]="isFetching ? 'fetching':'done'">
+            <tr *ngFor="let entry of vault_entries,i">
+              <td>{{ entry.user.username }}</td>
+              <td>{{ entry.created_at | date: 'MMM dd, y hh:mm' }}</td>
+              <!-- <td>{{ entry.user.username }}</td> -->
+              <td>{{ entry.type_label }}</td>
+              <td class="text-right"><span matTooltip="Click to view denominations" class="clickable" (click)="openModal(content, entry)">{{ entry.total | currency: ' '}}</span></td>
+              <td></td>
+              <td>{{ entry.remarks }}</td>
+              <td>
+                <button mat-raised-button color="danger" (click)="deleteVaultEntry(entry)" *ngIf="entry.is_latest || entry.is_deletable"><i class="fa fa-trash"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+      </div>
+  </mat-card-content>
+</mat-card>
+
+
+
+
+<ng-template #content let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title">Cash Denominations</h4>
+      <!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button> -->
+    </div>
+    <div class="modal-body">
+      <table class="table table-bordered table-striped denomination" >
+          <tr>
+            <th>1000</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d1000 != 0">
+                  <mat-chip>{{ selected_vault_entry.d1000 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td  style="width:20%" *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d1000" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d1000 * 1000) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>500</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d500 != 0">
+                  <mat-chip>{{ selected_vault_entry.d500 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d500" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d500 * 500) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>200</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d200 != 0">
+                  <mat-chip>{{ selected_vault_entry.d200 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d200" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d200 * 200) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>100</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d100 != 0">
+                  <mat-chip>{{ selected_vault_entry.d100 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d100" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d100 * 100) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>50</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d50 != 0">
+                  <mat-chip>{{ selected_vault_entry.d50 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d50" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d50 * 50) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>20</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d20 != 0">
+                  <mat-chip>{{ selected_vault_entry.d20 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d20" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d20 * 20) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>10</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d10 != 0">
+                  <mat-chip>{{ selected_vault_entry.d10 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d10" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d10 * 10) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>5</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d5 != 0">
+                  <mat-chip>{{ selected_vault_entry.d5 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d5" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d5 * 5) | currency: ' ' }}
+            </td>
+          </tr>
+          <tr>
+            <th>1</th>
+            <td>
+                <mat-chip-list *ngIf="selected_vault_entry.d1 != 0">
+                  <mat-chip>{{ selected_vault_entry.d1 }}</mat-chip>
+                </mat-chip-list>
+            </td>
+            <td *ngIf="showChangeForm">
+              <input type="number" [(ngModel)]="changeEntry.d1" class="form-control">
+            </td>
+            <td *ngIf="showChangeForm">
+              {{ (changeEntry.d1 * 1) | currency: ' ' }}
+            </td>
+          </tr>
+          <!-- <tr>
+            <th>0.25</th>
+            <td>{{ selected_vault_entry.d25c ? selected_vault_entry.d25c : '' }}</td>
+          </tr> -->
+          <tr>
+            <th>TOTAL </th>
+            <td class="text-right"><h4><strong>{{ selected_vault_entry.total | currency:' ' }}</strong></h4></td>
+
+            <td *ngIf="showChangeForm">
+              <strong>total change</strong>
+            </td>
+            <td *ngIf="showChangeForm">
+              <span>{{
+                      ((changeEntry.d1000 * 1000) +
+                      (changeEntry.d500 * 500) +
+                      (changeEntry.d200 * 200) +
+                      (changeEntry.d100 * 100) +
+                      (changeEntry.d50 * 50) +
+                      (changeEntry.d20 * 20) +
+                      (changeEntry.d10 * 10) +
+                      (changeEntry.d5 * 5) +
+                      changeEntry.d1) | currency: ' '
+                    }}</span>
+            </td>
+          </tr>
+      </table>
+    </div>
+    <div class="modal-footer">
+
+      <button mat-raised-button  *ngIf="isDeduction() && selected_vault_entry.total > 0" color="{{ !showChangeForm ? 'basic' : 'primary' }}" (click)="toggleChangeForm()">{{ !showChangeForm ? 'Set Change' : 'Save Changes'}}</button>
+      <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+    </div>
+  </ng-template>

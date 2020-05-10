@@ -1,0 +1,335 @@
+<mat-card>
+  <mat-card-title>
+    <div class="row">
+      <div class="col-lg-3">
+          <h2><i class="fa fa-shopping-basket"></i> Laundry</h2>
+          <small class="text-muted">Record Count: {{ meta.total }}</small>
+      </div>
+      <div (click)="queryParams.filter_status = '_overdue';queryParams.filter_date = '_today';filterStatusChange()" class="col-sm-1 text-center clickable">
+        <div [ngClass]="{'text-white rounded-circle d-block bg-danger blinking-due circle': true, 'blinking': summary.overdue > 0}">
+          <span>{{ summary.overdue }}</span>
+        </div>
+        Overdue
+      </div>
+      <div (click)="queryParams.filter_status = '_due';queryParams.filter_date = '_3hours_ahead';filterStatusChange()" class="col-sm-1 text-center clickable">
+        <div [ngClass]="{'text-white rounded-circle d-block bg-warning blinking-due circle': true, 'blinking': summary.due > 0}">
+          <span>{{ summary.due }}</span>
+        </div>
+        Due
+      </div>
+      <div (click)="queryParams.filter_status = '_for_pickup';queryParams.filter_date = '_3hours_ahead';filterStatusChange()" class="col-sm-1 text-center clickable">
+        <div [ngClass]="{'text-white rounded-circle d-block bg-primary blinking-pickup circle': true, 'blinking': summary.for_pickup > 0}">
+          <span>{{ summary.for_pickup }}</span>
+        </div>
+        Pickup
+      </div>
+      <div (click)="queryParams.filter_status = '_for_delivery';queryParams.filter_date = '_3hours_ahead';filterStatusChange()" class="col-sm-1 text-center clickable">
+        <div [ngClass]="{'text-white rounded-circle d-block bg-secondary blinking-delivery circle': true, 'blinking': summary.for_delivery > 0}">
+          <span>{{ summary.for_delivery }}</span>
+        </div>
+        Delivery
+      </div>
+      <div class="col-lg-2">
+        <button mat-raised-button *ngIf="!currentUser.is_cashier" class="pull-right" (click)="showSalesReportModal(salesReportModal)"><i class="fa fa-bar-chart"></i> Sales Report</button>
+        <br><br>
+        <button mat-raised-button *ngIf="!currentUser.is_cashier" class="pull-right" (click)="sendSmsNotification()"><i class="fa fa-envelope"></i> Send Sms Notification</button>
+      </div>
+      <div class="col-lg-3"><a routerLink="/laundry/create" mat-raised-button color="primary" class="pull-right"><i class="fa fa-plus"></i> New Transaction</a></div>
+    </div>
+    <hr>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-lg-3">
+          <mat-form-field class="full-width">
+            <input matInput autocomplete="off" placeholder="Search" [(ngModel)]="queryParams.q" (keyup)="fetchLaundries($event)">
+          </mat-form-field>
+      </div>
+      <!-- <div class="col-lg-2">
+          <mat-form-field class="full-width" *ngIf="currentUser.is_administrator">
+            <input matInput readonly [matDatepicker]="picker1" [(ngModel)]="_from_date" (dateChange)="fetchLaundries()" [max]="today"  placeholder="From:">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker touchUi  #picker1 disabled="false"></mat-datepicker>
+          </mat-form-field>
+      </div>
+      <div class="col-lg-2">
+          <mat-form-field class="full-width" *ngIf="currentUser.is_administrator">
+            <input matInput readonly [matDatepicker]="picker2" [(ngModel)]="_to_date" (dateChange)="fetchLaundries()" [min]="queryParams.from_date" [max]="today" placeholder="To:">
+            <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+            <mat-datepicker touchUi  #picker2 disabled="false"></mat-datepicker>
+          </mat-form-field>
+      </div> -->
+      <div class="col-lg-2">
+        <mat-form-field>
+          <mat-select placeholder="Transaction Type" (selectionChange)="fetchLaundries()" [(ngModel)]="queryParams.transaction_type">
+            <mat-option *ngIf="queryParams.transaction_type" [value]="null">All</mat-option>
+            <mat-option *ngFor="let transaction_type of transaction_types" [value]="transaction_type.value">{{ transaction_type.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-lg-2">
+        <mat-form-field>
+          <mat-select placeholder="Payment Status" (selectionChange)="fetchLaundries()" [(ngModel)]="queryParams.payment_status">
+            <mat-option *ngIf="queryParams.payment_status" [value]="null">All</mat-option>
+            <mat-option *ngFor="let s of payment_status" [value]="s.value">{{ s.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <!-- <div class="col-lg-1">
+          <mat-form-field>
+            <mat-select (selectionChange)="fetchLaundries()" [(ngModel)]="queryParams.recent_action" placeholder="Recent Status">
+              <mat-option [value]="" *ngIf="queryParams.recent_action">Reset</mat-option>
+              <mat-option [value]="-1" >Pending</mat-option>
+              <mat-option *ngFor="let s of status" [value]="s.value">{{ s.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+      </div> -->
+      <div class="col-lg-5">
+          <mat-paginator [length]="meta.total"
+              [pageSize]="queryParams.per_page"
+              [pageSizeOptions]="[25, 50, 100, 250]"
+              (page)="pageChange($event)">
+          </mat-paginator>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-2">
+          <mat-form-field>
+            <mat-select (selectionChange)="filterStatusChange()" [(ngModel)]="queryParams.filter_status" placeholder="Filter">
+              <mat-option [value]="null" *ngIf="queryParams.filter_status">Reset</mat-option>
+              <mat-option *ngFor="let s of filter_status" [value]="s.value">{{ s.label }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+      </div>
+      <div class="col-lg-2" >
+        <mat-form-field *ngIf="queryParams.filter_status && (queryParams.filter_status != '_overdue' && queryParams.filter_status != '_for_refund' )">
+          <mat-select (selectionChange)="fetchLaundries()" [(ngModel)]="queryParams.filter_date">
+            <mat-option *ngFor="let s of filter_date" [value]="s.value">{{ s.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-lg-4"></div>
+      <div class="col-lg-2">
+          <br>
+          <mat-checkbox [(ngModel)]="queryParams.unclaimed_only" (change)="fetchLaundries()">
+            Unclaimed Only
+          </mat-checkbox>
+      </div>
+      <div class="col-lg-2">
+          <br>
+          <a class="clickable"
+            *ngIf="queryParams.q || queryParams.transaction_type || queryParams.payment_status || queryParams.filter_status || !queryParams.unclaimed_only"
+            (click)="resetFilter()"><i class="fa fa-refresh"></i> Reset Filters</a>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover" matSort (matSortChange)="sortData($event)" >
+        <thead>
+          <th style="width: 5%" class="text-center">
+            <mat-checkbox [(ngModel)]="_check_all" [disabled]="laundries.length == 0" (change)="checkAll($event)"></mat-checkbox>
+          </th>
+          <th style="width: 10%" mat-sort-header="laundries.recent_action">Status</th>
+          <th style="width: 15%" mat-sort-header="laundries.transaction_no">TRN No.</th>
+          <th style="width: 20%">Customer</th>
+          <!-- <th>Date Received</th> -->
+          <th style="width: 15%" mat-sort-header="laundries.due_date">Due Date</th>
+          <!-- <th>Transaction Type</th> -->
+          <th mat-sort-header="laundries.total_weight" style="width: 5%">Wt</th>
+          <th style="width: 10%" class="text-center">Wash Type</th>
+          <th style="width: 5%">Amt</th>
+          <th style="width: 10%" mat-sort-header="laundries.customer_area_id" >Area</th>
+        </thead>
+        <tbody [@fetch]="isFetching ? 'fetching':'done'">
+          <tr *ngFor="let laundry of laundries" [ngClass]="{'highlight': laundry.checkbox, 'bg-danger-light text-white': laundry.is_overdue}">
+            <td class="text-center">
+              <mat-checkbox (change)="checkChange($event)" [(ngModel)]="laundry.checkbox"></mat-checkbox>
+            </td>
+            <td>
+              <span [ngClass]="{'clickable': !laundry.released, 'text-muted': !laundry.done, 'text-success': laundry.released, 'text-primary': laundry.done && !laundry.released}" (click)="addAction(laundry)">{{ laundry.recent_action_label }}</span>
+              <!-- <span *ngIf="laundry.wash_type == 4" class="text-muted">&nbsp;N/A</span> -->
+            </td>
+            <td>
+              <a [routerLink]="['/laundry/' + laundry.id]" class="clickable">{{ laundry.transaction_number_prefix }}<strong class="text-danger">{{ laundry.transaction_number_serial }}</strong></a>
+              <i *ngIf="laundry.images.length > 0" class="clickable fa fa-shopping-bag text-warning" matTooltip="{{ laundry.images.length }} image{{ laundry.images.length > 1 ? 's':'' }}" (click)="showImage(0, imagePreviewModal, laundry)"></i>
+              <i class="clickable fa fa-truck text-primary" matTooltip="{{ laundry.min_due_date | date: 'ha' }} to {{ laundry.due_date | date: 'ha' }}" *ngIf="laundry.for_delivery"></i>
+              <i *ngIf="laundry.action_remarks" matTooltipClass="my-tooltip" matTooltip="{{ laundry.action_remarks }}" class="clickable text-danger fa fa-exclamation-triangle"></i>
+            </td>
+            <td><label matTooltip="{{ laundry.customer_contact_number_formatted }}">{{ laundry.customer_name }}</label> <i class="fa fa-exclamation-triangle text-warning clickable" *ngIf="laundry.remarks" matTooltip="{{ laundry.remarks }}"></i> </td>
+            <!-- <td>{{ laundry.date_received | date:'MMM-dd-y hh:mm a (EEE)' }}</td> -->
+            <td>{{ laundry.due_date | date: 'EEE MM/dd/yyyy  ha' }}</td>
+            <td class="text-center">{{ laundry.total_weight > 0 ? (laundry.total_weight | currency: ' ') : '' }}</td>
+            <!-- <td>{{ laundry.transaction_type_label }}</td> -->
+            <td class="text-center">{{ laundry.wash_type_label }}</td>
+
+            <td class="text-center">
+              <span  [ngClass]="{'clickable rounded': true, 'text-danger': laundry.remaining_balance == laundry.total_amount, 'text-success': laundry.remaining_balance == 0, 'text-warning': laundry.remaining_balance > 0, 'bg-warning text-white': laundry.remaining_balance < 0}" matTooltip="{{ laundry.remaining_balance < 0 ? 'Refund:' + (laundry.remaining_balance*-1) : (laundry.remaining_balance > 0 ? (laundry.remaining_balance == laundry.total_amount ? 'Unpaid':'Balance: '+laundry.remaining_balance) : 'Paid')}}"  (click)="laundry.remaining_balance > 0 ? setPayment(laundry) : ''">{{ laundry.total_amount | currency: ' ' }}</span>
+              <i matTooltip="Paid w/ previous payment method" *ngIf="laundry.date_paid" class="text-success fa fa-exclamation"></i>
+            </td>
+            <!-- <td class="text-center"><i [ngClass]="{'fa': true,'fa-check text-success': laundry.date_paid}"></i></td> -->
+            <td><span class="clickable p-1" matTooltip="{{ (laundry.building ? laundry.building.name : '') + ' ' + laundry.customer_address }}">{{ laundry.area ? laundry.area.name : 'N/A' }}</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </mat-card-content>
+</mat-card>
+
+
+
+<br>
+<div *ngIf="summaryChecked.items > 0" class="p-2 text-warning text-white" style="position: fixed;bottom: 25px;left: 5px;border-radius: 5px;box-shadow: 0px 0px 10px 0px rgba(255,255,255,1);font-size: 15px !important">
+  <label>{{ summaryChecked.items }} selected</label> <br>
+  <span *ngIf="summaryChecked.total_amount > 0">Amount: {{ summaryChecked.total_amount | currency: 'P ' }}</span> <br>
+  <span *ngIf="summaryChecked.total_weight > 0">Weight: {{ summaryChecked.total_weight | currency: ' ' }} Kilo{{ summaryChecked.total_weight > 1 ? 's':'' }} <br></span>
+</div>
+
+
+<!--
+<form (submit)="savePayment()">
+    <ng-template #paymentModal let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Set Payment</h4>
+        <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <mat-form-field class="full-width">
+            <input type="text" matInput name="total_amount" [value]="selectedLaundry.remaining_balance" disabled placeholder="Remaining Balance">
+          </mat-form-field>
+          <mat-form-field class="full-width">
+            <mat-select name="payment_method" [disabled]="payment_methods.length == 0" (selectionChange)="paymentMethodChanged()" placeholder="Payment Method" [(ngModel)]="selectedLaundry.payment_method">
+                <mat-option *ngFor="let method of payment_methods" [value]="method.value">{{ method.name }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="full-width" *ngIf="selectedLaundry.payment_method == 1">
+            <input name="cash_received" (keyup)="savePayment($event)" type="number" id="_cash_received" [(ngModel)]="cash_received" autocomplete="off" matInput placeholder="Enter Cash Received  ">
+          </mat-form-field>
+          <br>
+          <span [ngClass]="{'p-2 rounded text-white': true, 'bg-warning': (selectedLaundry.remaining_balance-cash_received) > 0, 'bg-primary': (selectedLaundry.remaining_balance-cash_received) <= 0}" *ngIf="cash_received">{{ (selectedLaundry.remaining_balance-cash_received) > 0 ? 'Balance: ' + (selectedLaundry.remaining_balance-cash_received) : 'Change: ' + -1 * (selectedLaundry.remaining_balance-cash_received)  }}</span>
+          <span class="p-2 rounded text-white bg-danger" *ngIf="!cash_received">Enter cash</span>
+          <br>
+          <span *ngIf="selectedLaundry.payment_method == 2 && customer">Available: {{ customer.available_points | currency: ' ' }}</span>
+      </div>
+      <div class="modal-footer">
+          <button mat-raised-button color="basic" (click)="c()">Close</button>
+          <button mat-raised-button type="submit" color="primary" [disabled]="selectedLaundry.payment_method == 1 && !cash_received" (click)="savePayment()">Save</button>
+      </div>
+    </ng-template>
+  </form> -->
+
+
+
+
+<ng-template #salesReportModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title"><i class="fa fa-bar-chart"></i> Sales Report</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <mat-form-field>
+          <mat-select (selectionChange)="fetchSalesReport()" [(ngModel)]="sales_report.date_filter" placeholder="Date Filter">
+            <mat-option *ngFor="let d of date_filters" [value]="d.value">{{ d.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        &nbsp;
+        <mat-form-field *ngIf="sales_report.date_filter == '_custom'">
+          <input matInput readonly [matDatepicker]="salesPickerFromDate" (dateChange)="fetchSalesReport()" [(ngModel)]="sales_report.from_date" [max]="sales_report.to_date"  placeholder="From:">
+          <mat-datepicker-toggle matSuffix [for]="salesPickerFromDate"></mat-datepicker-toggle>
+          <mat-datepicker touchUi  #salesPickerFromDate disabled="false"></mat-datepicker>
+        </mat-form-field>
+        &nbsp;
+        <mat-form-field *ngIf="sales_report.date_filter == '_custom'">
+          <input matInput readonly [matDatepicker]="salesPickerToDate" (dateChange)="fetchSalesReport()" [(ngModel)]="sales_report.to_date" [max]="today" [min]="sales_report.from_date"  placeholder="To:">
+          <mat-datepicker-toggle matSuffix [for]="salesPickerToDate"></mat-datepicker-toggle>
+          <mat-datepicker touchUi  #salesPickerToDate disabled="false"></mat-datepicker>
+        </mat-form-field>
+        &nbsp;
+
+        <mat-form-field>
+          <mat-select (selectionChange)="fetchSalesReport()" [(ngModel)]="sales_report.user_id" placeholder="User">
+            <mat-option *ngIf="sales_report.user_id" [value]="null">ALL</mat-option>
+            <mat-option *ngFor="let user of sales_report.data?.users" [value]="user.id">{{ user.username }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <hr>
+        <div class="row" *ngIf="sales_report.data">
+          <div class="col-lg-4">
+            <div class="bg-success p-2 rounded text-center text-white">
+              Total Payments Received <br> <span *ngIf="sales_report.data.user">(by {{ sales_report.data.user.username }})</span>
+              <span *ngIf="!sales_report.data.user && sales_report.data.users ">({{ sales_report.data.users.length }} user{{ sales_report.data.users.length > 1 ? 's':'' }})</span>
+              <br> {{ sales_report.data.sales | currency: ' ' }}
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div *ngIf="sales_report.date_filter == '_today'" class="bg-info p-2 rounded text-center text-white">
+              Total Unpaid <br> <br> {{ sales_report.data.collectibles | currency: ' ' }}
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div *ngIf="sales_report.date_filter == '_today' && sales_report.data.refunds > 0" class="bg-warning p-2 rounded text-center text-white">
+              For Refund <br> {{ sales_report.data.refunds | currency: ' ' }}
+            </div>
+          </div>
+        </div>
+        <div class="table-responsive" *ngIf="sales_report.data">
+          <br>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Date/Time</th>
+                <th>TRN</th>
+                <th>User</th>
+                <th>Paid Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let payment of sales_report.data.payments">
+                <td>{{ payment.created_at | date:'MMM dd, y hh:mm a' }}</td>
+                <td><a (click)="modalService.dismissAll()" routerLink="/laundry/{{ payment.laundry_id }}">{{ payment.laundry.transaction_number_prefix }}<strong class="text-danger">{{ payment.laundry.transaction_number_serial }}</strong></a></td>
+                <td>{{ payment.user.username }}</td>
+                <td class="text-right">{{ payment.amount | currency: ' ' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+    </div>
+    <div class="modal-footer">
+
+    </div>
+  </ng-template>
+
+
+
+<ng-template #imagePreviewModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Laundry Image ({{ selectedImage.index + 1}}/{{ selectedLaundry.images.length }})</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+      <img class="laundry-image-fullview" src="{{ selectedImage.url }}" alt="">
+
+  </div>
+  <div class="modal-footer" style="display: unset">
+      <div class="row">
+          <div class="col-lg-4">
+              <!-- <button mat-raised-button color="error" (click)="deleteLaundryImage(selectedImage)"><i class="fa fa-trash"></i> Remove Image</button> -->
+          </div>
+          <div class="col-lg-4 text-center">
+            <button mat-raised-button color="basic" [disabled]="selectedImage.index == 0" (click)="showImage(selectedImage.index - 1)">Prev</button>
+            <button mat-raised-button color="basic" [disabled]="selectedImage.index == (this.selectedLaundry.images.length - 1)"  (click)="showImage(selectedImage.index + 1)">Next</button>
+          </div>
+          <div class="col-lg-4 text-right">
+            <button mat-raised-button color="primary" (click)="c()">Close</button>
+          </div>
+      </div>
+  </div>
+</ng-template>
+
+
+

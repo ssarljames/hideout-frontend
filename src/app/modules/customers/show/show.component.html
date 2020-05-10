@@ -1,0 +1,97 @@
+<mat-card>
+  <mat-card-title>
+    <h2>Customer
+
+      <button *ngIf="currentUser.is_administrator || currentUser.is_personnel" routerLink="/customers/{{ customer.id}}/edit" mat-raised-button color="primary" class="pull-right"><i class="fa fa-edit"></i> Edit</button>
+      <button *ngIf="currentUser.is_administrator" (click)="deleteCustomer()" mat-raised-button color="error" class="pull-right"><i class="fa fa-trash"></i> Delete</button>
+
+    </h2>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="row">
+      <div class="col-lg-6">
+        <fieldset>
+          <legend>Information</legend>
+          <table class="table">
+            <tr>
+              <td>Code</td>
+              <td class="text-primary">{{ customer.code }}</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td class="text-primary">{{ customer.name }}</td>
+            </tr>
+            <tr>
+              <td>Nickname</td>
+              <td class="text-primary"><i>{{ customer.nickname }}</i></td>
+            </tr>
+            <tr>
+              <td>Address</td>
+              <td class="text-primary">{{ customer.address }}</td>
+            </tr>
+            <tr>
+              <td>Building</td>
+              <td class="text-primary">{{ customer.building?.name }}</td>
+            </tr>
+            <tr>
+              <td>Area</td>
+              <td class="text-primary">{{ customer.area?.name }}</td>
+            </tr>
+            <tr>
+              <td>Mobile Number</td>
+              <td class="text-primary">{{ customer.contact_number_formatted }}</td>
+            </tr>
+          </table>
+        </fieldset>
+        <fieldset>
+          <legend>Laundry Transactions</legend>
+          <strong>Total: {{ total_laundry | currency: ' ' }}</strong>
+          <br>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>DATETIME</th>
+                <th>TXN</th>
+                <th>AMOUNT</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let laundry of customer.laundry_transactions">
+                <td>{{ laundry.created_at | date: 'MM/dd/yy hh:mma ' }}</td>
+                <td><a routerLink="/laundry/{{ laundry.id }}" class="clickable">{{ laundry.transaction_no }}</a></td>
+                <td class="text-right">{{ laundry.total_amount | currency: ' ' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+      <div class="col-lg-6">
+        <fieldset>
+          <legend>Points</legend>
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Amount</th>
+                <th>Available</th>
+                <th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let point of customer.points">
+                <td>{{ point.code }}</td>
+                <td>{{ point.amount | currency: ' ' }}</td>
+                <td>{{ point.available | currency: ' ' }}</td>
+                <td>{{ point.type_label }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <br>
+          <div class="text-right" *ngIf="!currentUser.is_cashier">
+            <button mat-raised-button (click)="addPoints()"><i class="fa fa-plus"></i> Points</button>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card>

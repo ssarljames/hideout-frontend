@@ -1,0 +1,141 @@
+
+<form [formGroup]="mealForm">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Meal Information</h4>
+      <button type="button" class="close" aria-label="Close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+
+        <ellipsis-loading *ngIf="isFetchingMeal"></ellipsis-loading>
+
+        <div *ngIf="!isFetchingMeal && selectedMeal != null">
+
+              <div class="row">
+                <div class="col-lg-6">
+                    <mat-form-field class="full-width">
+                      <input matInput  autocomplete="off" name="name" placeholder="Name" [formControl]="mealForm.controls.name">
+                      <mat-error *ngIf="mealForm.controls.name.invalid">{{ mealForm.controls.name.errors[0] }}</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                      <input matInput  autocomplete="off" name="price" placeholder="Price" [formControl]="mealForm.controls.price">
+                      <mat-error *ngIf="mealForm.controls.price.invalid">{{ mealForm.controls.price.errors[0] }}</mat-error>
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                      <input matInput  autocomplete="off" name="preparation_time" placeholder="Preparation Time (in mininutes)" [formControl]="mealForm.controls.preparation_time">
+                      <mat-error *ngIf="mealForm.controls.preparation_time.invalid">{{ mealForm.controls.preparation_time.errors[0] }}</mat-error>
+                    </mat-form-field>
+                </div>
+
+                <div class="col-lg-6">
+                    <mat-form-field class="full-width">
+                      <!-- <input matInput  autocomplete="off" name="name" placeholder="Name" [formControl]="mealForm.controls.name"> -->
+                      <textarea matInput name="description" placeholder="Description" [formControl]="mealForm.controls.description" rows="5"></textarea>
+                      <mat-error *ngIf="mealForm.controls.description.invalid">{{ mealForm.controls.name.errors[0] }}</mat-error>
+                    </mat-form-field>
+                </div>
+              </div>
+
+
+              <small class="text-muted">(Click the image to upload new one.)</small>
+              <br>
+              <img src="{{ imageSrc }}" class="clickable rounded" alt="" id="meal-image-preview" (click)="openBrowseFile($event)">
+              <br>
+              <small class="text-muted clickable" (click)="resetImage()" *ngIf="imageFile">Undo Image Change</small>
+
+              <input autocomplete="off" id="image_pic" accept="image/*" type="file" name="profile_pic" class="d-none" (change)="onFileChange($event)" placeholder="Profile Picture">
+
+              <br>
+
+              <mat-card>
+                    <mat-card-title>
+                          <strong>Inventory Items <span *ngIf="selectedMeal?.inventory_items?.length > 0">({{ selectedMeal.inventory_items.length }})</span></strong>
+                    </mat-card-title>
+
+                    <mat-card-content>
+                          <table class="table">
+                            <thead>
+                              <th style="width: 40%">Item</th>
+                              <th style="width: 20%">Item Count</th>
+                            </thead>
+                            <tr *ngFor="let item of selectedMeal.inventory_items;">
+                              <td>{{ item.name }}</td>
+                              <td>
+                                <input min="0" style="display: inline-block;width: 50%" class="form-control" [ngModelOptions]="{standalone: true}" type="number" [(ngModel)]="item.item_count">
+                                {{ item.item_count > 1 ? 'pcs' : 'pc' }}
+                              </td>
+                            </tr>
+                            <tr *ngIf="selectedMeal.inventory_items.length == 0">
+                              <td class="text-muted" colspan="4">No item from inventory included in this meal</td>
+                            </tr>
+
+                          </table>
+                          <div class="row">
+                            <div class="col-lg-6">
+                                <mat-form-field class="full-width" >
+                                  <input [formControl]="inventoryItemNameAutoComplete" type="text" placeholder="Add Item" matInput [matAutocomplete]="auto">
+                                  <mat-autocomplete autoActiveFirstOption [displayWith]="displayInventoryItemFn" #auto="matAutocomplete" (optionSelected)="selectInventoryItem($event)">
+                                    <mat-option *ngFor="let inventoryItem of inventoryItems$ | async" [value]="inventoryItem">
+                                        {{ inventoryItem.name | titlecase}}
+                                    </mat-option>
+                                  </mat-autocomplete>
+                                  <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                                    <i class="fa fa-search"></i>
+                                  </button>
+                                </mat-form-field>
+                            </div>
+                          </div>
+                    </mat-card-content>
+
+              </mat-card>
+              <br>
+              <mat-card *ngIf="selectedMeal.meal_category_id > 1">
+                <mat-card-title>
+                      <strong>Drinks <span *ngIf="selectedMeal?.drinks?.length > 0">({{ selectedMeal.drinks.length }})</span></strong>
+                </mat-card-title>
+                <mat-card-content>
+                      <table class="table">
+                        <thead>
+                          <th style="width: 40%">Name</th>
+                          <th style="width: 20%">Add On Price</th>
+                        </thead>
+                        <tr *ngFor="let item of selectedMeal.drinks;">
+                          <td>{{ item.name }} <span class="fa fa-exclamation-triangle text-danger clickable" matTooltip="This drink is currently unavailable" *ngIf="!item.available"></span></td>
+                          <td>
+                            <input min="0" class="form-control" [ngModelOptions]="{standalone: true}" type="number" [(ngModel)]="item.add_on_price">
+                          </td>
+                        </tr>
+                        <tr *ngIf="selectedMeal.drinks.length == 0">
+                          <td class="text-muted" colspan="4">No drinks included in this meal</td>
+                        </tr>
+
+                      </table>
+                      <div class="row">
+                        <div class="col-lg-6">
+                            <mat-form-field class="full-width" >
+                              <input [formControl]="drinksAutoComplete" type="text" placeholder="Add Drink" matInput [matAutocomplete]="autoDrink">
+                              <mat-autocomplete autoActiveFirstOption [displayWith]="displayDrinkFn" #autoDrink="matAutocomplete" (optionSelected)="selectDrink($event)">
+                                <mat-option *ngFor="let drink of drinks$ | async" [value]="drink">
+                                    {{ drink.name | titlecase}}
+                                </mat-option>
+                              </mat-autocomplete>
+                              <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                                <i class="fa fa-search"></i>
+                              </button>
+                            </mat-form-field>
+                        </div>
+                      </div>
+                </mat-card-content>
+
+          </mat-card>
+        </div>
+
+    </div>
+    <div class="modal-footer" *ngIf="!isFetchingMeal && selectedMeal != null">
+        <button mat-raised-button color="basic" class="pull-left" (click)="fetchMeal()"><i class="fa fa-refresh"></i> Reset</button>
+        <button mat-raised-button color="basic" (click)="closeModal()"><i class="fa fa-close"></i> Close</button>
+      <button mat-raised-button color="primary" (click)="saveMeal()"><i class="fa fa-save"></i> Save</button>
+      <br>
+    </div>
+</form>

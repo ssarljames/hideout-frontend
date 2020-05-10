@@ -1,0 +1,87 @@
+
+
+<div class="row">
+  <div class="col-lg-12"><form (ngSubmit)="save()" class="form-horizontal">
+      <mat-card>
+        <mat-card-title>
+          <h2>New Cash Count Entry</h2>
+        </mat-card-title>
+        <mat-card-content>
+            <div class="row">
+                <div class="col-lg-4">
+                    <table class="table">
+                        <tr>
+                          <td>1000 x &nbsp; </td>
+                          <td><input autocomplete="off" min="0" type="number" name="d1000" [(ngModel)]="cash_count.d1000" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>500 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d500" [(ngModel)]="cash_count.d500" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>200 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d200" [(ngModel)]="cash_count.d200" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>100 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d100" [(ngModel)]="cash_count.d100" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>50 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d50" [(ngModel)]="cash_count.d50" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>20 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d20" [(ngModel)]="cash_count.d20" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>10 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d10" [(ngModel)]="cash_count.d10" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>5 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d5" [(ngModel)]="cash_count.d5" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>1 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d1" [(ngModel)]="cash_count.d1" class="form-control"></td>
+                        </tr>
+                        <tr>
+                          <td>0.25 x &nbsp;</td>
+                          <td><input autocomplete="off" min="0" type="number" name="d25c" [(ngModel)]="cash_count.d25c" class="form-control"></td>
+                        </tr>
+                      </table>
+                </div>
+                <div class="col-lg-4">
+                    <br *ngIf="types.length == 0">
+                    <!-- <select required disabled="{{ types.length == 0 ? 'true':'false'}}" name="type" [(ngModel)]="cash_count.type" id="" class="form-control">
+                    <option *ngFor="let t of types" value="{{ t.value }}">{{ t.name }}</option>
+                    </select> -->
+
+                    <mat-form-field class="full-width">
+                      <mat-select disabled="{{ types.length == 0 ? 'true':'false'}}" [ngModelOptions]="{standalone: true}" [(ngModel)]="cash_count.type" placeholder="For" name="type">
+                        <mat-option *ngFor="let t of types" value="{{ t.value }}">{{ t.name }}</mat-option>
+                      </mat-select>
+                      <small class="text-muted" *ngIf="types.length == 0">Loading...</small>
+                    </mat-form-field>
+                    <mat-form-field class="full-width">
+                      <textarea matInput  placeholder="Remarks" [(ngModel)]="cash_count.remarks" [ngModelOptions]="{standalone: true}"></textarea>
+                      <!-- <mat-error *ngIf="form.controls.remarks.invalid">{{ form.controls.remarks.errors.required ? "This field is required" : form.controls.remarks.errors[0] }}</mat-error> -->
+                    </mat-form-field>
+                    <br>
+                    <h3>Total: {{ getTotal() | currency: ' '}}</h3>
+                    <br>
+                    <div class="text-right">
+                      <button mat-raised-button color="basic" routerLink="/cash-counts" type="button"><i class="fa fa-remove"></i> Cancel</button>
+                      <button mat-raised-button color="primary" type="submit"><i class="fa fa-save"></i> Save</button>
+                    </div>
+                
+                </div>
+            </div>
+        </mat-card-content>
+        <mat-card-actions>
+        </mat-card-actions>
+      </mat-card>
+    </form>
+  </div>
+</div>

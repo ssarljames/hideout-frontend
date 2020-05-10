@@ -1,0 +1,25 @@
+<div class="row">
+  <div class="col-lg-3"></div>
+  <div class="col-lg-6">
+    <br>
+    <mat-card>
+      <mat-card-title class="bg-danger text-white">
+        <h3><i class="fa fa-exclamation-circle"></i> Error 404</h3>
+      </mat-card-title>
+      <mat-card-content>
+        <p class="text-muted">
+          Page you're looking for was not found or was removed.
+          <br>
+          <small><i>Please contact your administrator.</i></small>
+        </p>
+      </mat-card-content>
+      <mat-card-actions class="text-right">
+        <a routerLink="/dashboard" class="btn btn-primary"><i class="fa fa-home"></i> Go to Homepage</a>
+        <br><br>
+        
+        <small class="text-muted pull-left">Hide Out System ver {{ version }}</small>
+        <br>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

@@ -1,0 +1,462 @@
+<mat-card>
+  <mat-card-title>
+    <h2>Laundry Transaction <span class="text-muted">({{ laundry.recent_action_label }})</span></h2>
+    <hr>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="row" [@fetch]="!laundry.id ? 'fetching':'done'">
+
+
+      <div class="col-lg-4">
+        <fieldset>
+          <legend>Customer Information</legend>
+
+          <table class="table table-striped">
+            <tr>
+              <td>ID</td>
+              <td class="text-primary">{{ laundry.customer?.code }}</td>
+            </tr>
+            <tr>
+              <td>Name</td>
+              <td class="text-primary"><a routerLink="/customers/{{ laundry.customer_id }}">{{ laundry.customer_name }}</a></td>
+            </tr>
+            <tr>
+              <td>Nickname</td>
+              <td class="text-primary"><i>{{ laundry.customer_nickname }}</i></td>
+            </tr>
+            <tr>
+              <td>Address</td>
+              <td class="text-primary">{{ laundry.customer_address }}</td>
+            </tr>
+            <tr>
+              <td>Building</td>
+              <td class="text-primary">{{ laundry.building?.name }}</td>
+            </tr>
+            <tr>
+              <td>Area</td>
+              <td class="text-primary">{{ laundry.area?.name }}</td>
+            </tr>
+            <tr>
+              <td>Contact Number</td>
+              <td class="text-primary">{{ laundry.customer_contact_number_formatted }}</td>
+            </tr>
+          </table>
+        </fieldset>
+
+        <fieldset *ngIf="laundry.date_received">
+          <legend>
+            Status  <button *ngIf="!laundry.released" (click)="openActionModal()" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>
+          </legend>
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Description</th>
+                <th>Time Date</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let action of laundry.actions">
+                <td><span matTooltip="Action by {{ action.user?.username }}">{{ action.description_label }} {{ action.machine ? 'at ' + action.machine.name  + '' : '' }}</span></td>
+                <td>
+                  {{ action.created_at | date: 'hh:mma MM/dd/yy' }}
+                  <i class="fa fa-exclamation-triangle text-warning clickable" *ngIf="action.remarks" matTooltip="Remarks: {{ action.remarks }} "></i>
+                </td>
+                <td class="text-muted" style="vertical-align: middle"><i (click)="deleteAction(action)" class="fa fa-remove clickable" *ngIf="action.is_deletable"></i></td>
+              </tr>
+              <tr *ngIf="laundry.actions.length == 0 && laundry.wash_type != 4">
+                <td class="text-muted text-center" colspan="4">No actions taken yet.</td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+      </div>
+
+
+
+      <div class="col-lg-4">
+        <fieldset>
+          <legend>Transaction Detail <span *ngIf="laundry.is_editable" class="clickable" matTooltip="Edit this transaction" routerLink="/laundry/{{ laundry.id }}/edit"><i class="fa fa-edit"></i></span> </legend>
+          <table class="table table-striped">
+            <tr>
+              <td>Transaction Number</td>
+              <td class="text-primary">{{ laundry.transaction_number_prefix }}<strong class="badge badge-danger" style="font-size: 20px;color: #da0000;background: #8ddaff">{{ laundry.transaction_number_serial }}</strong></td>
+            </tr>
+            <tr>
+              <td>Transaction Type</td>
+              <td class="text-primary">{{ laundry.transaction_type_label }} </td>
+            </tr>
+            <tr *ngIf="laundry.transaction_type == 2">
+              <td>Scheduled Pickup Date</td>
+              <td class="text-primary">
+                {{ laundry.pickup_date_from | date: 'MMM dd, yyyy' }}
+              </td>
+            </tr>
+            <tr *ngIf="laundry.transaction_type == 2">
+              <td>Time</td>
+              <td class="text-primary">
+                  {{ laundry.pickup_date_from | date: 'hh:00 a'  }} to
+                  {{ laundry.pickup_date_to | date: 'hh:00 a'  }} <br>
+                  <label class="bg-danger text-white p-1 rounded" *ngIf="!laundry.date_received" [innerHTML]="((laundry.pickup_date_from | amDifference: now : 'seconds' : true) | amDuration : 'seconds') + ' ' + ( (laundry.pickup_date_from | amDifference: now : 'seconds' : true) > 0 ? 'before scheduled pickup' : ' past <br> (Pick this up now!)' )"></label>
+                  <span class="bg-success text-white p-1 rounded" *ngIf="laundry.date_received">Picked Up</span>
+              </td>
+            </tr>
+            <tr *ngIf="laundry.date_received">
+              <td>Wash Type</td>
+              <td class="text-primary">{{ laundry.wash_type_label }} </td>
+            </tr>
+            <tr *ngIf="laundry.date_received">
+              <td>Date Received</td>
+              <td class="text-primary">
+                {{ laundry.date_received_formatted }} <br>
+                by <strong>{{ laundry.user.username }}</strong>
+                <div class="text-muted" *ngIf="laundry.updated_by_user">
+                  <br>
+                  Updated by {{ laundry.updated_by_user.username }} at {{ laundry.updated_at_formatted }}
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="laundry.due_date && !laundry.is_self_service">
+              <td>Due Date</td>
+              <td class="text-primary">
+                <div>
+                  {{ laundry.due_date_formatted }} <div class="bg-danger text-white p-1 rounded text-center" *ngIf="laundry.is_overdue">{{  (laundry.due_date | amDifference: now : 'seconds' : true) | amDuration : 'seconds' }} {{ (laundry.due_date | amDifference: now : 'seconds' : true) > 0 ? "before due" : " overdue"}}</div>
+                  <div class="bg-success text-white p-1 rounded" *ngIf="laundry.done">Ready</div>
+                  <div *ngIf="laundry.for_delivery" class="bg-primary text-white rounded p-1 text-center"><i class="fa fa-truck clickable"></i><span [innerHTML]="laundry.recent_action == 8 ? 'Delivered' : (laundry.recent_action == 6 ? 'Claimed' : 'For Delivery at <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + laundry.delivery_time)"></span></div>
+                </div>
+              </td>
+            </tr>
+            <!-- <tr>
+              <td>Delivery Date</td>
+              <td class="text-primary">
+                <span *ngIf="laundry.delivery_date_formatted">{{ laundry.delivery_date_formatted }}</span> &nbsp;
+                <span class="bg-success text-white p-1" *ngIf="laundry.released && laundry.delivery_date_formatted">Delivered</span>
+              </td>
+            </tr>       -->
+            <tr *ngIf="laundry.date_received">
+              <td>Total Weight</td>
+              <td class="text-primary">
+                <span>{{ laundry.total_weight | currency: ' ' }} kilos</span>
+              </td>
+            </tr>
+            <!-- <tr *ngIf="laundry.date_received">
+              <td>Total Payable</td>
+              <td class="text-primary">
+                <span>{{ laundry.total_amount | currency: ' ' }}</span>
+              </td>
+            </tr>       -->
+            <tr *ngIf="laundry.date_received">
+              <td>Payment Status</td>
+              <td>
+                <span *ngIf="laundry.remaining_balance <= 0" class="text-success">{{ laundry.payment_status }}</span>
+                <span *ngIf="laundry.remaining_balance > 0" class="text-danger">Remaining Balance: {{ laundry.remaining_balance | currency: ' '}}</span>
+                <span *ngIf="laundry.remaining_balance < 0" class="text-danger"><br>Refund: {{ laundry.remaining_balance * -1 | currency: ' '}}</span>
+              </td>
+            </tr>
+            <tr>
+              <td>Remarks</td>
+              <td>
+                <p>{{ laundry.remarks }}</p>
+              </td>
+            </tr>
+          </table>
+          <a *ngIf="laundry.id && !laundry.date_received" mat-raised-button color="primary" [routerLink]="['/laundry/' + laundry.id + '/edit']" routerLinkActive="router-link-active" ><i class="fa fa-edit"></i> Update</a>
+
+
+          <div class="row">
+              <div class="col-lg-12">
+                <div *ngIf="laundry.wash_type != 4 && laundry.date_received" >
+                  <br><br>
+                  <!-- <table class="table table-bordered">
+                    <thead>
+                      <tr>
+                        <th>Kind</th>
+                        <th>Weight</th>
+                        <th>Rate</th>
+                        <th>Amount</th>
+                        <th>Total Base Charge</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Regular</td>
+                        <td class="text-right padding-right-20px">{{ laundry.regular_kg > 0 ? (laundry.regular_kg | currency: ' ') + ' kilo/s' : '' }}</td>
+                        <td class="text-right padding-right-20px">{{ laundry.regular_kg > 0 ? (laundry.regular_rate | currency: ' ') + ' per kilo' : '' }}</td>
+                        <td class="text-right padding-right-20px">{{ laundry.regular_kg > 0 ? (laundry.regular_amount | currency: ' ') : '' }}</td>
+                        <td rowspan="2" class="text-center" style="vertical-align: middle !important">{{ laundry.wash_charge | currency: ' ' }}</td>
+                      </tr>
+                      <tr>
+                        <td>Beddings</td>
+                        <td class="text-right padding-right-20px">{{ laundry.beddings_kg > 0 ? (laundry.beddings_kg | currency: ' ') + ' kilo/s'  : '' }}</td>
+                        <td class="text-right padding-right-20px">{{ laundry.beddings_kg > 0 ? (laundry.beddings_rate | currency: ' ') + ' per kilo' : '' }}</td>
+                        <td class="text-right padding-right-20px">{{ laundry.beddings_kg > 0 ? (laundry.beddings_amount | currency: ' ') : '' }}</td>
+                      </tr>
+                    </tbody>
+                  </table> -->
+                  <table class="table bg-dark text-white rounded" *ngIf="laundry.wash_type < 4">
+                    <tr>
+                      <td>RATES</td>
+                      <td [ngClass]="{'text-center': true, 'text-muted': laundry.regular_rate == 0 }">Regular <br> {{ laundry.regular_rate ? laundry.regular_rate + '/kg' : 'Loading...' }}</td>
+                      <td [ngClass]="{'text-center': true, 'text-muted': laundry.beddings_rate == 0 }">Beddings <br> {{ laundry.beddings_rate ? laundry.beddings_rate + '/kg' : 'Loading...' }}</td>
+                      <td>TOTALS</td>
+                    </tr>
+                    <tr>
+                        <td>KGS</td>
+                        <td class="text-right">{{ laundry.regular_kg > 0 ? laundry.regular_kg : '' }}</td>
+                        <td class="text-right">{{ laundry.beddings_kg > 0 ? laundry.beddings_kg : '' }}</td>
+                        <td class="text-center">
+                            {{  laundry.total_weight | currency: ' ' }} {{  laundry.total_weight > 1 ? 'kg':'kgs' }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>PCS</td>
+                        <td class="text-right">{{ laundry.regular_pieces > 0 ? laundry.regular_pieces : '' }}</td>
+                        <td class="text-right">{{ laundry.beddings_pieces > 0 ? laundry.beddings_pieces : '' }}</td>
+                        <td class="text-center">
+                            {{  (laundry.regular_pieces + laundry.beddings_pieces) | number: '1.0-0'  }} pcs
+                        </td>
+                    </tr>
+                    <tr>
+                      <td>AMOUNT</td>
+                      <td class="text-center">{{ laundry.regular_kg > 0 ? ((laundry.regular_kg * laundry.regular_rate) | currency:' ') : '' }}</td>
+                      <td class="text-center">{{ laundry.beddings_kg > 0 ? ((laundry.beddings_kg * laundry.beddings_rate) | currency:' ') : '' }}</td>
+                      <td class="text-center">
+                          <strong class="p-1 border rounded bg-info">{{  laundry.wash_charge | currency: ' ' }}</strong>
+                      </td>
+                    </tr>
+                  </table>
+                  <br><br>
+                </div>
+              </div>
+            </div>
+        </fieldset>
+        <fieldset *ngIf="laundry.wash_type == 4">
+          <legend>
+            Add-Ons
+            <button *ngIf="!laundry.released" (click)="showAddOnModal(addOnModal)" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>
+          </legend>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of laundry.add_ons">
+                <td><span class="clickable" matTooltip="{{ item.created_at | date: 'MMM dd hh:mm a' }}">{{ item.inventory_item.name }}</span></td>
+                <td class="text-center">{{ item.quantity }}</td>
+                <td class="text-center">{{ item.price }}</td>
+                <td class="text-right">{{ item.total_amount | currency: ' ' }}</td>
+                <td><span *ngIf="item.is_deletable" class="fa fa-remove clickable" (click)="removeAddOn(item)"></span></td>
+              </tr>
+              <tr *ngIf="laundry.add_ons.length == 0">
+                <td colspan="5" class="text-center text-muted">None</td>
+              </tr>
+            </tbody>
+          </table>
+        </fieldset>
+
+        <fieldset>
+          <legend>
+            Compose Sms
+            <button  class="btn btn-primary btn-sm" (click)="composeSms()" ><i class="fa fa-plus"></i></button>
+          </legend>
+          <div class="bg-white p-1">
+
+            <div *ngFor="let outbox of laundry.sms_outbox" class="m-2 p-1 mb-3">
+              <div class="bg-primary text-white p-1 rounded">
+                {{ outbox.message }}
+              </div>
+              <small *ngIf="outbox.sent_at == '0000-00-00 00:00:00'" class="pull-right text-danger">
+                <i class="fa fa-exclamation-triangle"></i> Sending failed.
+              </small>
+              <small *ngIf="outbox.sent_at != '0000-00-00 00:00:00'" class="pull-right text-muted">
+                <i class="fa fa-check"></i> {{ 'Sent at ' + (outbox.sent_at | date: 'MMM dd hh:mm a')  }}
+              </small>
+            </div>
+
+            <div class="text-center text-muted" *ngIf="laundry.sms_outbox.length == 0">No sms sent to customer yet.</div>
+          </div>
+        </fieldset>
+      </div>
+
+      <div class="col-lg-4">
+          <fieldset>
+            <legend>Charges</legend>
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                    <th style="width: 50%">Description</th>
+                    <th style="width: 40%">Amount</th>
+                    <th style="width: 10%"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let charge of laundry.charges">
+                  <td matTooltip="Date: {{ charge.created_at | date: 'MMM dd hh:mm a' }}" >{{ charge.description_label }}</td>
+                  <td matTooltip="Remarks: {{ charge.remarks }}" [ngClass]="{'text-right': charge.amount != 0,'text-center text-muted': charge.amount == 0, 'padding-right-20px': true, 'text-danger' : charge.amount < 0}">{{ charge.amount == 0 ? "Free" : (charge.amount | currency: ' ') }}</td>
+                  <td class="text-center" style="vertical-align: middle"> <i (click)="deleteCharge(charge)" *ngIf="charge.is_deletable" class="fa fa-remove p-1 clickable"></i> </td>
+                </tr>
+                <tr>
+                  <td class="text-right">Total</td>
+                  <td  class="text-right"><h3 class="text-primary">{{ laundry.total_amount }}</h3></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </fieldset>
+
+          <fieldset>
+            <legend>
+              Payments
+              <button *ngIf="laundry.remaining_balance != 0" (click)="setPayment(paymentModal)" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>
+            </legend>
+            <table class="table" *ngIf="laundry.payments?.length > 0">
+              <thead>
+                <tr>
+                  <th>Date/Time</th>
+                  <th>Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let payment of laundry.payments">
+                  <td>{{ payment.created_at | date: 'MMM dd hh:mm a' }}</td>
+                  <td class="text-right"><span matTooltip="Received By: {{ payment.user.username }}">{{ payment.amount | currency: ' ' }}</span></td>
+                  <td><span *ngIf="payment.is_deletable" class="clickable" (click)="deletePayment(payment)"><i class="fa fa-remove"></i></span></td>
+                </tr>
+              </tbody>
+            </table>
+            <i class="text-muted" *ngIf="laundry.payments?.length == 0">No payments made yet.</i>
+          </fieldset>
+
+
+          <fieldset>
+            <legend>
+              Photos<span *ngIf="laundry.images?.length > 0">({{ laundry.images.length }})</span>&nbsp;
+              <button (click)="showAddPhotoModal(addPhotoModal)" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i></button>
+            </legend>
+            <img *ngFor="let image of laundry.images; index as i" (click)="showImage(i, imagePreviewModal)" src="{{ image.url }}" alt="" class="laundry-image-thumbnail">
+            <i class="text-muted" *ngIf="laundry.images?.length == 0">No images available</i>
+          </fieldset>
+      </div>
+
+
+    </div>
+
+
+  </mat-card-content>
+</mat-card>
+
+
+<ng-template #addOnModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add Ons</h4>
+      <!-- <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button> -->
+    </div>
+    <div class="modal-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of inventoryItems" [ngClass]="{'text-danger': item.add_on_count > item.no_of_stocks}">
+              <td>{{ item.name }}</td>
+              <td class="text-right">{{ item.price }}</td>
+              <td class="text-center">{{ item.no_of_stocks }}</td>
+              <td><input type="number" [disabled]="item.no_of_stocks == 0" [ngClass]="{'form-control text-center': true}" [(ngModel)]="item.add_on_count" max="{{ item.no_of_stocks }}" min="1"></td>
+            </tr>
+            <tr>
+              <td colspan="3">Total</td>
+              <td>{{ computeTotalAddOns() | currency: ' '}}</td>
+            </tr>
+          </tbody>
+        </table>
+
+    </div>
+    <div class="modal-footer">
+        <button mat-raised-button color="basic" (click)="c();">Close</button>
+        <button mat-raised-button color="primary" (click)="confirmNewAddOns()">Save</button>
+    </div>
+  </ng-template>
+
+
+
+
+
+<ng-template #imagePreviewModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Laundry Image ({{ selectedImage.index + 1}}/{{ laundry.images.length }})</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+      <img class="laundry-image-fullview" src="{{ selectedImage.url }}" alt="">
+
+  </div>
+  <div class="modal-footer" style="display: unset">
+      <div class="row">
+          <div class="col-lg-4">
+              <button mat-raised-button color="error" (click)="deleteLaundryImage(selectedImage)"><i class="fa fa-trash"></i> Remove Image</button>
+          </div>
+          <div class="col-lg-4 text-center">
+            <button mat-raised-button color="basic" [disabled]="selectedImage.index == 0" (click)="showImage(selectedImage.index - 1)">Prev</button>
+            <button mat-raised-button color="basic" [disabled]="selectedImage.index == (this.laundry.images.length - 1)"  (click)="showImage(selectedImage.index + 1)">Next</button>
+          </div>
+          <div class="col-lg-4 text-right">
+            <button mat-raised-button color="primary" (click)="c()">Close</button>
+          </div>
+      </div>
+  </div>
+</ng-template>
+
+
+
+
+
+<ng-template #addPhotoModal let-c="close" let-d="dismiss">
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Add Photo</h4>
+    <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body text-center">
+      <div class="row">
+        <div class="col-lg-8">
+          <webcam height="400" width="400" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" ></webcam>
+        </div>
+        <div class="col-lg-4">
+          <div class="laundry-images">
+            <img *ngFor="let image of images" class="laundry-image rounded" src="{{ image.imageAsDataUrl }}" alt="">
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <div class="modal-footer" style="display:block">
+      <div class="row">
+        <div class="col-lg-6">
+          <button mat-raised-button class="pull-left" *ngIf="images.length > 0" color="error" (click)="images = []">Clear All</button>
+        </div>
+        <div class="col-lg-6 text-right">
+            <button mat-raised-button color="basic" (click)="c()">Close</button>
+            <button mat-raised-button color="basic" (click)="triggerSnapshot()">Capture</button>
+            <button mat-raised-button color="primary" [disabled]="images.length == 0" (click)="savePhoto()">Save</button>
+        </div>
+      </div>
+  </div>
+</ng-template>

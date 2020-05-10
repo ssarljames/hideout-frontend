@@ -1,0 +1,60 @@
+<mat-card>
+  <mat-card-title>
+    <h2 class="page-header">Customers
+      <a mat-raised-button *ngIf="currentUser.is_administrator || currentUser.is_personnel" color="primary" routerLink="/customers/create" class="pull-right"><i class="fa fa-plus"></i> New customer</a>
+    </h2>
+  </mat-card-title>
+  <mat-card-content>
+    <br>
+    <div class="row">
+      <div class="col-lg-4">
+        <form name="form" (ngSubmit)="fetchCustomers()">
+
+          <mat-form-field class="full-width">
+            <input matInput type="text" name="q" autocomplete="off" (keyup)="fetchCustomers($event)"  placeholder="Search" [(ngModel)]="queryParams.q">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear">
+              <!-- <mat-icon>search</mat-icon> -->
+              <i class="fa fa-search"></i>
+            </button>
+          </mat-form-field>
+        </form>
+      </div>
+      <div class="col-lg-4"></div>
+      <div class="col-lg-4">
+          <mat-paginator [length]="meta.total"
+              [pageSize]="queryParams.per_page"
+              [pageSizeOptions]="pageSizeOptions"
+              (page)="pageChange($event)">
+          </mat-paginator>
+      </div>
+    </div>
+    <table matSort (matSortChange)="sortData($event)" class="table table-hover table-striped">
+      <thead>
+        <th mat-sort-header="customers.code">Customer ID</th>
+        <th mat-sort-header='customers.name'>Name</th>
+        <th mat-sort-header='customers.building_id'>Building</th>
+        <th mat-sort-header='customers.address'>Address</th>
+        <th mat-sort-header='customers.area_id'>Area</th>
+        <th mat-sort-header='customers.contact_number'>Contact Number</th>
+      </thead>
+      <tbody [@fetch]="isFetching ? 'fetching':'done'">
+        <tr *ngFor="let customer of customers">
+          <td>{{ customer?.code }}</td>
+          <td>{{ customer?.name }}</td>
+          <td>{{ customer?.building?.name }}</td>
+          <td>{{ customer?.address }}</td>
+          <td>{{ customer?.area?.name }}</td>
+          <td>{{ customer?.contact_number_formatted }}</td>
+          <td>
+            <button matTooltip="View customer account detail" mat-button color="basic" routerLink="/customers/{{ customer.id }}"><i class="fa fa-eye"></i> </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <!-- <pagination-controls (pageChange)="queryParams.page = $event;fetchcustomers()"></pagination-controls> -->
+
+    <h4 [@fetch]="isFetching ? 'fetching':'done'" *ngIf="customers.length == 0 && !isFetching" class="text-center text-muted">No data found</h4>
+
+  </mat-card-content>
+</mat-card>

@@ -1,0 +1,32 @@
+td{
+  text-align: center;
+  vertical-align: middle;
+}
+// td:first-child{
+//   text-align: left;
+// }
+// td:last-child{
+//   // text-align: right;
+//   // font-weight: bolder
+// }
+
+.bg-warning{
+  background: #fdefc5 !important;
+}
+
+mat-chip{
+  margin: 0 auto !important;
+}
+
+.summary tr:last-child td{
+  font-weight: bolder;
+}
+
+.opacity-50{
+  opacity: 0.3;
+}
+
+
+.opacity-50 :hover{
+  opacity: unset;
+}

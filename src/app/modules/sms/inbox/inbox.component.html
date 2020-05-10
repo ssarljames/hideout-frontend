@@ -1,0 +1,33 @@
+<br>
+
+<div class="text-right">
+
+  <button class="btn btn-danger btn-outlined" (click)=" deleteChecked()"><i class="fa fa-trash"></i> Delete All Checked</button>
+
+</div>
+<br><br>
+
+<table class="table">
+  <thead>
+    <th>
+        <mat-checkbox (change)="checkAllToggle()" [(ngModel)]="checked_all"></mat-checkbox>
+    </th>
+    <th style="width: 20%;">Received At</th>
+    <th style="width: 20%;">Customer</th>
+    <th style="width: 50%;">Message</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <tr *ngFor="let m of inbox">
+      <td>
+        <mat-checkbox (change)="checkChange($event, m)" [(ngModel)]="m.checked"></mat-checkbox>
+      </td>
+      <td>{{ m.received_at | date: 'EEE MM/dd/yy  h:mm a'  }}</td>
+      <td>{{ m.customer ? m.customer.name : m.sender }}</td>
+      <td>{{ m.message }}</td>
+    </tr>
+    <tr *ngIf="inbox.length == 0">
+      <td colspan="4" style="height: 200px;"></td>
+    </tr>
+  </tbody>
+</table>

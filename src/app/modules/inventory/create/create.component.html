@@ -1,0 +1,49 @@
+
+<form [formGroup]="form" (ngSubmit)="saveItem()">
+    <mat-card>
+      <mat-card-title>
+        <h2>New Item</h2>
+      </mat-card-title>
+      <mat-card-content>
+          <br><br>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field class="full-width">
+                <input matInput  autocomplete="off" name="name" placeholder="Item Name" [formControlName]="'name'">
+                <mat-error *ngIf="form.controls.name.invalid">{{ form.controls.name.errors.required ? "This field is required" : form.controls.name.errors[0] }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field class="full-width">
+                <input matInput  autocomplete="off" name="price" placeholder="Price" [formControlName]="'price'">
+                <mat-error *ngIf="form.controls.price.invalid">{{ form.controls.price.errors.required ? "This field is required" : form.controls.price.errors[0] }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field>
+                  <mat-select [formControlName]="'item_category_id'" (selectionChange)="form.controls.item_category_id.setValue($event.value)" placeholder="Category">
+                    <mat-option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</mat-option>
+                  </mat-select>
+                  <mat-error *ngIf="form.controls.item_category_id.invalid">{{ form.controls.item_category_id.errors.required ? "This field is required" : form.controls.item_category_id.errors[0] }}</mat-error>
+                </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field>
+                <input matInput  autocomplete="off" name="warn_stock" placeholder="Warn if Stock is less than" [formControlName]="'warn_stock'">
+                <mat-error *ngIf="form.controls.warn_stock.invalid">{{ form.controls.warn_stock.errors.required ? "This field is required" : form.controls.warn_stock.errors[0] }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" type="submit"><i class="fa fa-save"></i> Save</button>
+        <button mat-raised-button color="basic" routerLink="/inventory" type="button"><i class="fa fa-remove"></i> Cancel</button>
+      </mat-card-actions>
+    </mat-card>
+</form>

@@ -1,0 +1,33 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Add Action to {{ laundry.transaction_no }}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+    <mat-form-field class="full-width">
+      <mat-select [disabled]="actions.length == 0" placeholder="Action" [(ngModel)]="new_action.description">
+          <mat-option *ngFor="let action of actions" [value]="action.value">{{ action.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="full-width" *ngIf="new_action.description == 2 || new_action.description == 3 ">
+      <mat-select placeholder="Machine" [(ngModel)]="new_action.machine_id">
+          <mat-option *ngFor="let machine of (new_action.description == 2 ? washing_machines : dryers)" [value]="machine.id">{{ machine.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="full-width" *ngIf="new_action.description">
+      <textarea placeholder="Remarks" matInput [(ngModel)]="new_action.remarks" autocomplete="off"></textarea>
+    </mat-form-field>
+
+    <mat-checkbox *ngIf="(new_action.description == 5 && !laundry.for_delivery) || (new_action.description == 7 && laundry.for_delivery)" [checked]="new_action.send_sms_notification" [(ngModel)]="new_action.send_sms_notification">Send sms notification <span class="text-muted">(Will send after 10 seconds)</span></mat-checkbox>
+
+    <div *ngIf="laundry.remaining_balance > 0 && laundry.done">
+      <br>
+      <span class="bg-warning p-2 rounded text-white">Please settle the payment first. Click <strong (click)="showPayment()">here</strong></span>
+    </div>
+</div>
+<div class="modal-footer">
+    <button mat-raised-button color="basic" (click)="d()">Close</button>
+    <button mat-raised-button color="primary" [disabled]="!new_action.description" (click)="saveNewAction()">Save</button>
+</div>

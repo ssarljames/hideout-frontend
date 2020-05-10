@@ -1,0 +1,117 @@
+<mat-card>
+  <mat-card-title>
+    <div class="row">
+      <div class="col-lg-6">
+        <h2><i class="fa fa-book"></i> Inventory</h2>
+      </div>
+      <div class="col-lg-6 text-right">
+        <button routerLink="/inventory/categories" mat-raised-button color="basic"><i class="fa fa-list-alt"></i> Categories</button>
+        <button routerLink="/inventory/create" mat-raised-button color="primary"><i class="fa fa-plus"></i> New Item</button>
+      </div>
+    </div>
+    <hr>
+  </mat-card-title>
+  <mat-card-content>
+    <div *ngIf="summary.low_in_stock > 0">
+          <span class="text-warning"><i class="fa fa-warning"></i> {{ summary.low_in_stock }} {{ summary.low_in_stock > 1 ? "items":"item"}} is running out of stock </span>
+    </div>
+    <div class="row">
+      <div class="col-lg-4">
+          <form name="form">
+
+              <mat-form-field class="full-width">
+                <input matInput type="text" name="q" autocomplete="off" (keyup)="fetchInventoryItems($event)"  placeholder="Search" [(ngModel)]="queryParams.q">
+                <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                  <!-- <mat-icon>search</mat-icon> -->
+                  <i class="fa fa-search"></i>
+                </button>
+              </mat-form-field>
+            </form>
+      </div>
+      <div class="col-lg-4"></div>
+      <div class="col-lg-4">
+          <mat-paginator [length]="meta.total ? meta.total : 0"
+              [pageSize]="queryParams.per_page"
+              [pageSizeOptions]="[25, 100, 500]"
+              (page)="pageChange($event)">
+          </mat-paginator>
+      </div>
+    </div>
+    <div class="table-responsive">
+      <table matSort (matSortChange)="sortData($event)" class="table table-striped">
+        <thead>
+          <tr>
+            <th mat-sort-header="inventory_items.name">Item Name</th>
+            <th mat-sort-header="inventory_items.no_of_stocks">No. of Stocks Available</th>
+            <!-- <th>Warn if Stock less than</th> -->
+            <th mat-sort-header="inventory_items.price">Price</th>
+            <th mat-sort-header="item_categories.name">Category</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody [@fetch]="isFetching ? 'fetching':'done'">
+          <tr *ngFor="let item of inventoryItems | paginate: { itemsPerPage: meta.per_page, currentPage: meta.current_page, totalItems: meta.total }"
+            [ngClass]="[(item.no_of_stocks <= item.warn_stock && item.warn_stock > 0) ? 'bg-warning':'']"
+            >
+            <td>{{ item.name }}</td>
+            <td class="text-center">{{ item.no_of_stocks }}</td>
+            <!-- <td class="text-center">{{ item.warn_stock }}</td> -->
+            <td class="text-right">{{ item.price | currency: ' ' }}</td>
+            <td class="text-center">{{ item.item_category?.name }}</td>
+            <td class="text-center">
+                <span class="clickable text-muted" matTooltip="Add Stocks" (click)="openTransactionModal(transactionModal, item, true)"><i class="fa fa-plus"></i></span>
+                &nbsp;&nbsp;
+                <span class="clickable text-muted" matTooltip="Release Stocks" (click)="openTransactionModal(transactionModal, item, false)"><i class="fa fa-minus"></i></span>
+                &nbsp;&nbsp;
+                <span class="clickable text-muted" matTooltip="View Transactions" routerLink="/inventory/{{ item.id }}"><i class="fa fa-list-alt"></i></span>
+                &nbsp;&nbsp;
+                <span class="clickable text-muted" matTooltip="Edit Item Info" routerLink="/inventory/{{ item.id }}/edit"><i class="fa fa-edit"></i></span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <pagination-controls *ngIf="meta.last_page > 1" (pageChange)="queryParams.page = $event;fetchInventoryItems()"></pagination-controls>
+  </mat-card-content>
+</mat-card>
+
+
+
+  <ng-template #transactionModal let-modal>
+
+    <form [formGroup]="form" (ngSubmit)="saveTransaction()">
+        <div class="modal-header">
+          <h4 class="modal-title">{{ isAdding ? 'New Acquisition':'Item Release' }}</h4>
+          <!-- <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <span aria-hidden="true">&times;</span>
+          </button> -->
+        </div>
+        <div class="modal-body">
+          <span *ngIf="!isAdding" class="text-success">Available Stock: {{ selectedItem.no_of_stocks }}<br> </span>
+          <br>
+
+          <div class="row">
+              <div class="col-lg-12">
+                <mat-form-field>
+                  <input matInput  autocomplete="off" name="quantity" placeholder="No. of Stock {{ isAdding ? 'Acquired':'to be Release' }}" [formControlName]="'quantity'">
+                  <mat-error *ngIf="form.controls.quantity.invalid">{{ form.controls.quantity.errors.required ? "This field is required" : form.controls.quantity.errors[0] }}</mat-error>
+                </mat-form-field>
+                <mat-form-field class="full-width">
+                    <textarea matInput  placeholder="Remarks"  [formControlName]="'remarks'"></textarea>
+                    <mat-error *ngIf="form.controls.remarks.invalid">{{ form.controls.remarks.errors.required ? "This field is required" : form.controls.remarks.errors[0] }}</mat-error>
+                </mat-form-field>
+                <br>
+                <mat-checkbox matTooltip="Caution!" name='recount' [formControlName]="'recount'" ([model])="form.control.recount.value">
+                    This is a recount
+                </mat-checkbox>
+              </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+        </div>
+    </form>
+  </ng-template>

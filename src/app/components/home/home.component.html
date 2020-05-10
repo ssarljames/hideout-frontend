@@ -1,0 +1,53 @@
+<mat-card>
+    <mat-card-title>
+        <h2><i class="fa fa-dashboard"></i> Dashboard</h2>
+    </mat-card-title>
+    <mat-card-content>
+        <div class="row">
+            <div class="col-lg-3">
+                <mat-card>
+                    <mat-card-title class="bg-primary text-white">Net Sale</mat-card-title>
+                    <mat-card-content class="text-right">
+                        {{ (cashCountSummary ? cashCountSummary.net : randomNumbers)  | currency: ' '}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-3">
+                <mat-card>
+                    <mat-card-title class="bg-danger text-white">Deductions</mat-card-title>
+                    <mat-card-content class="text-right">
+                        {{ (cashCountSummary ? cashCountSummary.deductions.total : randomNumbers)  | currency: ' '}}
+                    </mat-card-content>
+                </mat-card>
+            </div>
+            <div class="col-lg-3">
+                <mat-card>
+                    <mat-card-title class="bg-warning text-white">Running out of stock</mat-card-title>
+                    <mat-card-content class="text-right">
+                        <a routerLink="/inventory">{{ inventorySummary.low_in_stock }} {{ inventorySummary.low_in_stock > 1 ? "items":"item"}}</a>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+        </div>
+        <br><br>
+        <!-- <h3><i class="fa fa-spoon"></i> Meals</h3>
+        <hr>
+        <div class="row">
+          <div class="col-lg-3" *ngFor="let meal of meals">
+            <mat-card class="meal-card">
+              <mat-card-title>
+                  <span class="badge badge-primary p-2">{{ meal.name }} ({{ meal.price | currency: 'P' }})</span>
+              </mat-card-title>
+              <mat-card-content class="text-center">
+                <img src="{{ meal.image_path_url }}" class="meal-image">
+                <br><br>
+                <i class="text-muted" *ngIf="meal.description">"{{ meal.description }}"</i>
+                <i class="text-muted" *ngIf="!meal.description">No description available</i>
+              </mat-card-content>
+            </mat-card>
+          </div>
+        </div> -->
+
+        <!-- <webcam></webcam> -->
+    </mat-card-content>
+</mat-card>

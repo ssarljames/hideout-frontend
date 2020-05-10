@@ -1,0 +1,21 @@
+
+<br>
+
+<button class="btn btn-default pull-right" (click)="fetchDeviceInformation()"><i [ngClass]="{'fa fa-refresh': true, 'fa-spin': isFetching}"></i> Refresh</button>
+
+<br>
+
+<div class="row">
+  <div class="col-lg-4">
+
+      Signal Strength: <span *ngIf="device_information.signal_strength" [class]="'badge badge-' +  device_information.signal_strength.class"> {{ device_information.signal_strength.label }} </span> <span class="text-muted" *ngIf="!device_information.signal_strength">Loading...</span>
+      <br><br>
+      <mat-progress-bar *ngIf="device_information.signal_strength"  mode="determinate" [value]="(device_information.signal_strength.value / 30) * 100"></mat-progress-bar>
+
+  </div>
+
+  <div class="col-lg-4">
+    Device Location: <br>
+    <strong>{{ device_information.device }}</strong>
+  </div>
+</div>

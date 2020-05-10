@@ -1,0 +1,13 @@
+<div [class]="'modal-header bg-' + color + ' text-white'">
+  <h5 class="modal-title text-center text-white">Confirmation</h5>
+</div>
+<div class="modal-body">
+  <p [innerHTML]="message ? message : 'Are you sure?' "></p>
+  <span *ngIf="withPrompt"> If yes, give the answer on this equation: <strong>{{ equation }} = ?</strong></span>
+
+  <input *ngIf="withPrompt" type="text" class="form-control" [(ngModel)]="userInput" placeholder="Enter the number given">
+</div>
+<div class="modal-footer p-2">
+  <button [disabled]="answer != (userInput * 1) && withPrompt" type="button" [class]="'btn btn-' + color"  (click)="close()"><i class="fa fa-check"></i> Confirm</button>
+  <button type="button" class="btn btn-default" (click)="dismiss()"><i class="fa fa-remove"></i> Cancel</button>
+</div>

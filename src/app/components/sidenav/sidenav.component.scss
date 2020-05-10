@@ -1,0 +1,22 @@
+a{
+  padding: 10px !important;
+  color: #fff;
+  background-color: none;
+  transition: background-color 0.3s linear;
+}
+
+.active{
+  background-color: yellow;
+  color: #333 !important;
+  border-right: #6264fb solid 5px;
+  margin-right: -5px;
+  transition: background-color 0.3s linear;
+}
+
+.nav-link:hover{
+  background: #3c454e;
+}
+
+.active:hover{
+  background-color: yellow;
+}

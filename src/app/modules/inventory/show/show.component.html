@@ -1,0 +1,29 @@
+<mat-card  [@fetch]="isFetching ? 'fetching':'done'">
+  <mat-card-title>
+    <h2>Transactions to "{{ item?.name }}"</h2>
+  </mat-card-title>
+  <mat-card-content>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date/Time</th>
+            <th>Type</th>
+            <th>Quantity</th>
+            <th>User</th>
+            <th>Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let t of item?.transactions">
+            <td>{{ t.created_at | date:'MMM dd, y hh:mm a' }}</td>
+            <td>{{ t.quantity < 0 ? "Released" : "Acquired" }}</td>
+            <td>{{ t.quantity < 0 ? (t.quantity * -1) : t.quantity }}</td>
+            <td>{{ t.user.fullname }}</td>
+            <td>{{ t.remarks }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-card-content>
+</mat-card>

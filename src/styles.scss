@@ -1,0 +1,252 @@
+/* You can add global styles to this file, and also import other style files */
+
+@import "assets/css/bootstrap.min.css";
+@import "assets/css/font-awesome.min.css";
+//@import '@angular/material/prebuilt-themes/deeppurple-amber.css';
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+@import '~ngx-toastr/toastr.css';
+
+.mat-raised-button .fa{
+  vertical-align: baseline !important;
+}
+
+a{
+  text-decoration: none !important;
+}
+
+body, html{
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  background: #494a52 !important;
+}
+
+.full-width{
+  width: 100%;
+}
+
+.mat-card-content, .mat-card-subtitle {
+    font-size: 18px !important;
+}
+
+.table td, .table th{
+  padding: 3px !important;
+}
+
+.btn{
+  margin-right: 5px;
+}
+
+.alert-danger {
+  color: #ffffff;
+  background-color: #BD362F;
+  border-color: #f5c6cb;
+}
+
+
+.container-fluid .mat-card{
+  padding: 1px !important;
+  // min-height: 90vh !important;
+}
+
+.mat-card-title{
+  padding: 16px 16px 16px 16px;
+  border-top-right-radius: 4px;
+  border-top-left-radius: 4px;
+}
+.mat-card-content{
+  padding: 5px 16px 16px 16px;
+}
+
+.mat-card-actions{
+  padding: 16px !important;
+}
+
+.mat-card-content, .mat-card-subtitle {
+  font-size: 17px !important;
+}
+
+
+.text-middle{
+  vertical-align: middle !important;
+}
+
+.clickable{
+  padding: 4px;
+}
+
+.clickable:hover{
+  cursor: pointer;
+  // text-decoration: underline;
+  background: #ababff;
+  border-radius: 4px;
+  color: black !important;
+}
+
+.modal-holder{
+  animation-name: example;
+  animation-duration: 0.5s;
+}
+
+@keyframes example {
+  0%   {transform: scale(0.1); opacity: 0;}
+  100% {transform: scale(1); opacity: 1;}
+}
+
+
+button{
+  margin-right: 5px !important;
+}
+
+.padding-right-20px{
+  padding-right: 20px !important;
+}
+
+.padding-20px{
+  padding: 20px;
+}
+
+
+ngb-modal-window{
+  margin-left: -20px !important;
+}
+
+
+
+/* fallback */
+@font-face {
+  font-family: 'Material Icons';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/assets/css/fonts/material.woff2') format('woff2');
+}
+
+.material-icons {
+  font-family: 'Material Icons';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+
+td {
+  vertical-align: middle !important;
+}
+
+
+.profile-picture{
+  height: 40px !important;
+  width: 40px !important;
+  border-radius: 50% !important;
+}
+
+
+@media (min-width: 576px){
+  .modal-sm {
+      max-width: 500px;
+  }
+}
+
+fieldset {
+  margin-top: 1em;
+  border-radius: 4px 4px 0 0;
+  -moz-border-radius: 4px 4px 0 0;
+  -webkit-border-radius: 4px 4px 0 0;
+  border: #aaa solid 1px;
+  padding: 20px;
+  background: #eee;
+  text-shadow: 1px 1px 2px #fff inset;
+  -moz-box-shadow: 1px 1px 2px #fff inset;
+  -webkit-box-shadow: 1px 1px 2px #fff inset;
+  box-shadow: 1px 1px 2px #fff inset;
+}
+
+fieldset legend {
+  font-weight: bold;
+  color: #444;
+  padding: 5px 10px;
+  border-radius: 2px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border: 1px solid #aaa;
+  background-color: #fff;
+  font-size: unset !important;
+  -moz-box-shadow: 3px 3px 15px #bbb;
+  -webkit-box-shadow: 3px 3px 15px #bbb;
+  box-shadow: 3px 3px 15px #bbb;
+  width: unset !important;
+}
+
+
+.btn-group-sm > .btn, .btn-sm {
+  padding: 0px 7px;
+  font-size: .875rem;
+  line-height: 1.5;
+  border-radius: .2rem;
+}
+
+.cdk-global-overlay-wrapper, .cdk-overlay-container {
+  z-index: 99999 !important;
+}
+
+.mat-card{
+  padding: 1px !important;
+
+  .mat-card-title {
+    font-size: unset !important;
+  }
+
+}
+
+
+.mat-paginator{
+  .mat-paginator-outer-container{
+      .mat-paginator-container{
+          .mat-paginator-page-size, .mat-paginator-range-actions{
+              display: inline !important;
+          }
+      }
+  }
+}
+
+
+
+.mat-tooltip {
+  /* your own custom styles here */
+  /* e.g. */
+  font-size: 20px !important;
+  white-space: pre-line  !important;
+
+}
+
+.flow-root {
+  display: flow-root !important;
+}
+
+.table-hover tr:hover{
+  background: #b8b8ff !important;
+}
+
+.clickable-underlined:hover{
+    text-decoration: underline !important;
+    cursor: pointer;
+}
+
+.badge{
+  font-size: unset !important;
+}
+
+
+.modal-content{
+  border: none !important;
+}

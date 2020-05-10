@@ -1,0 +1,9 @@
+tr td:first-child, tr td:last-child{
+  text-align: right;
+}
+
+tr td{
+  vertical-align: middle !important;
+  border: 0;
+}
+

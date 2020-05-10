@@ -1,0 +1,117 @@
+
+<mat-card>
+  <mat-card-title>
+    <h2><i class="fa fa-spoon"></i> Menus
+
+      <div class="text-right">
+
+        <button mat-raised-button color="primary" (click)="newCategory()"><i class="fa fa-plus"></i> New Category</button>
+        <button mat-raised-button *ngIf="dirtyItemsCount > 0" (click)="saveMealAvailabilityChanges()" color="accent"><i class="fa fa-check"></i> Save Changes</button>
+        <button mat-raised-button *ngIf="dirtyItemsCount > 0" color="basic" (click)="fetchMealCategories()"><i class="fa fa-refresh"></i> Reset</button>
+
+      </div>
+    </h2>
+    <hr>
+
+    <ellipsis-loading *ngIf="isFetching"></ellipsis-loading>
+  </mat-card-title>
+  <mat-card-content [@fetch]="isFetching ? 'fetching':'done'">
+
+
+
+    <div class="row">
+      <div class="col-lg-4">
+          <mat-form-field class="full-width">
+            <input matInput type="text" name="q" autocomplete="off" placeholder="Search" [(ngModel)]="queryParams.q">
+            <button mat-button matSuffix mat-icon-button aria-label="Clear">
+              <i class="fa fa-search"></i>
+            </button>
+          </mat-form-field>
+      </div>
+    </div>
+    <br>
+
+    <div *ngFor="let meal_category of meal_categories" class="meal-category">
+      <mat-card>
+        <mat-card-title>
+            <h4>
+                <mat-checkbox [disabled]="meal_category.meals.length == 0" [value]="meal_category.id" (change)="availabilityOfMealCategoryChange($event)" [indeterminate]="meal_category.is_indeterminate" [checked]="meal_category.available_meal_count > 0">
+                    {{ meal_category.name }}
+                </mat-checkbox>
+                 <span *ngIf="meal_category.available_meal_count > 0 && queryParams.q == ''">({{ meal_category.available_meal_count }}/{{ meal_category.meals.length }}) </span>
+
+                <i [ngClass]="{'m-1 fa': true, 'fa-minus-square-o': !meal_category.hide, 'fa-plus-square-o': meal_category.hide}" (click)="toggleMealCategoryView(meal_category)"></i>
+                
+            </h4>
+        </mat-card-title>
+        <mat-card-content *ngIf="!meal_category.hide">
+            <table class="table" *ngIf="meal_category.meals.length > 0">
+                <thead>
+                  <th style="width: 30%">Name</th>
+                  <th></th>
+                  <th style="width: 10%">Price</th>
+                  <th style="width: 10%">Preparation Time</th>
+                  <th style="width: 30%">Inventory Items</th>
+                  <th></th>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let meal of meal_category.meals | filterName: queryParams.q">
+                    <td>
+                      <mat-checkbox [color]="'primary'" [value]="meal.id" id="mc-{{ meal.id }}-{{ meal.meal_category_id }}" [checked]="meal.available" (change)="availabilityOfMealChange($event)">
+                        {{ meal.name }}
+                      </mat-checkbox>
+                    </td>
+                    <td class="text-left">
+                      <img src="{{ meal.image_path_url }}" style="height: 50px;max-width: 50px" alt="">
+                    </td>
+                    <td>
+                      {{ meal.price | currency: ' '}}
+                    </td>
+                    <td>
+                      {{ meal.preparation_time }}min
+                    </td>
+                    <td>
+                      <span [ngClass]="{'text-white p-1 rounded m-1': true,
+                                        'bg-warning': (item.warn_stock >= item.no_of_stocks && item.warn_stock > 0 && item.no_of_stocks > 0) || (item.no_of_stocks < item.pivot.item_count),
+                                        'bg-danger': (item.warn_stock >= item.no_of_stocks && item.warn_stock > 0 && item.no_of_stocks == 0),
+                                        'bg-primary':  item.no_of_stocks >= item.pivot.item_count || item.warn_stock == 0}" *ngFor="let item of meal.inventory_items">{{ item.name }}</span>
+                    </td>
+                    <td>
+                      <i class="fa fa-edit clickable" matTooltip="Edit Meal Information" (click)="openMealForm(mealFormModal, meal)"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <button mat-raised-button color="primary" (click)="openMealForm(mealFormModal, {meal_category_id: meal_category.id, items: []})"><i class="fa fa-plus"></i> New</button>
+              <button mat-raised-button  (click)="renameCategory(meal_category)"><i class="fa fa-edit"></i> Edit Category Name</button>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <br><br>
+    <br><br>
+    <br><br>
+
+
+  </mat-card-content>
+</mat-card>
+
+
+
+
+<!--
+<input type="file" (change)="fileChangeEvent($event)" />
+
+<image-cropper
+    [imageChangedEvent]="imageChangedEvent"
+    [maintainAspectRatio]="true"
+    [aspectRatio]="4 / 3"
+    [resizeToWidth]="128"
+    format="png"
+    (imageCropped)="imageCropped($event)"
+    (imageLoaded)="imageLoaded()"
+    (cropperReady)="cropperReady()"
+    (loadImageFailed)="loadImageFailed()"
+></image-cropper>
+
+<img [src]="croppedImage" /> -->

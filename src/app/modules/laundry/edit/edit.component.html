@@ -1,0 +1,348 @@
+<mat-card>
+    <mat-card-content>
+      <h2>Edit Laundry Entry <span class="bg-info text-white rounded p-1"> &nbsp; #{{ laundry.transaction_number_serial }} &nbsp; </span></h2>
+      <hr>
+      <div class="row" *ngIf="laundry.id">
+        <div class="col-lg-3">
+          <fieldset>
+            <legend>Customer</legend>
+
+            <mat-form-field *ngIf="laundry.customer_id">
+              <input matInput disabled placeholder="Customer ID" [(ngModel)]="laundry.customer_code">
+            </mat-form-field>
+
+
+            <mat-form-field *ngIf="laundry.customer_id">
+              <input matInput disabled placeholder="Customer Name" [(ngModel)]="laundry.customer_name">
+            </mat-form-field>
+
+
+            <mat-form-field class="full-width">
+              <input id="nickname" autocomplete="off" matInput placeholder="Customer Nickname" [(ngModel)]="laundry.customer_nickname">
+            </mat-form-field>
+
+            <mat-form-field class="full-width">
+              <textarea id="address" autocomplete="off" matInput placeholder="Address" [(ngModel)]="laundry.customer_address"></textarea>
+            </mat-form-field>
+
+
+            <mat-form-field class="full-width">
+              <mat-select placeholder="Area" (selectionChange)="setArea(laundry.customer_area_id)"  [(ngModel)]="laundry.customer_area_id">
+                  <mat-option [value]="null" *ngIf="laundry.customer_area_id">Not Applicable</mat-option>
+                  <mat-option *ngFor="let area of areas" [value]="area.id">{{ area.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            
+          
+            <mat-form-field class="full-width">
+              <mat-select [disabled]="!laundry.customer_area_id || selectedArea.buildings?.length == 0"  placeholder="Building/Dormitory/Boarding House" name="building_id"  [(ngModel)]="laundry.customer_building_id">
+                  <mat-option [value]="null" *ngIf="laundry.customer_building_id">Not Applicable</mat-option>
+                  <mat-option *ngFor="let building of selectedArea.buildings" [value]="building.id">{{ building.name }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+  
+
+            <mat-form-field class="full-width">
+              <input matInput autocomplete="off" placeholder="Contact Number" [(ngModel)]="laundry.customer_contact_number">
+            </mat-form-field>
+
+
+
+          </fieldset>
+
+        </div>
+
+        <div class="col-lg-9">
+          <fieldset>
+            <legend>Transaction Detail <i *ngIf="laundry.is_deletable" class="fa fa-trash p-1 clickable rounded text-white bg-danger" (click)="deleteTransaction()"></i></legend>
+
+            <!-- <mat-form-field>
+              <input matInput placeholder="No. of Pieces" autocomplete="off" [(ngModel)]="laundry.no_of_pieces">
+            </mat-form-field> -->
+
+            <div class="row">
+                    <div class="col-lg-3">
+                        <mat-form-field class="full-width">
+                          <mat-select disabled placeholder="Transaction Type" [(ngModel)]="laundry.transaction_type" (selectionChange)="transactionTypeChanged();computeCharges()">
+                              <mat-option *ngFor="let type of transaction_types" [value]="type.value">{{ type.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="full-width">
+                          <mat-select placeholder="Wash Type" [(ngModel)]="laundry.wash_type" (selectionChange)="washTypeChanged()">
+                            <mat-option [value]="''" *ngIf="!laundry.date_received && laundry.transaction_type == 2 && laundry.wash_type">Unset</mat-option>
+                            <mat-option *ngFor="let type of wash_types" [value]="type.value">{{ type.name }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-3">
+                          <mat-form-field class="full-width" *ngIf="laundry.transaction_type == 2">
+                            <input matInput readonly [matDatepicker]="_pickup_date_picker" [min]="_today" [(ngModel)]="_pickup_date" placeholder="Pickup Date">
+                            <mat-datepicker-toggle matSuffix [for]="_pickup_date_picker"></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #_pickup_date_picker></mat-datepicker>
+                          </mat-form-field>
+                          <mat-form-field class="full-width" *ngIf="laundry.date_received">
+                            <input matInput disabled [matDatepicker]="_date_received_picker" [min]="_today" [(ngModel)]="_date_received" placeholder="Date Received">
+                            <mat-datepicker-toggle matSuffix [for]="_date_received_picker" disabled></mat-datepicker-toggle>
+                            <mat-datepicker touchUi #_date_received_picker></mat-datepicker>
+                          </mat-form-field>
+                          <mat-form-field class="full-width" *ngIf="laundry.date_received">
+                            <input min="0" disabled placeholder="Time Received" matInput [(ngModel)]="laundry.time_received" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                          </mat-form-field>
+                    </div>
+                    <div class="col-lg-3">
+                        <mat-form-field class="full-width" *ngIf="laundry.transaction_type == 2">
+                          <mat-select placeholder="From" [(ngModel)]="laundry._pickup_time_from" (selectionChange)="laundry._pickup_time_to = laundry._pickup_time_from + 1">
+                              <mat-option *ngFor="let h of getTimeTo(8, 20)" [value]="h">{{ h > 12 ? h-12 : h }} {{ h > 11 ? 'PM':'AM' }}</mat-option>
+                          </mat-select>
+                        </mat-form-field>
+                        <mat-form-field class="full-width" *ngIf="laundry.wash_type">
+                          <input matInput readonly [matDatepicker]="_due_date_picker" [min]="_today" [(ngModel)]="_due_date" placeholder="Due Date">
+                          <mat-datepicker-toggle matSuffix [for]="_due_date_picker"></mat-datepicker-toggle>
+                          <mat-datepicker touchUi #_due_date_picker></mat-datepicker>
+                        </mat-form-field>
+                    </div>
+                    <div class="col-lg-3">
+                          <mat-form-field class="full-width" *ngIf="laundry.transaction_type == 2 && laundry._pickup_time_from">
+                            <mat-select placeholder="To" [(ngModel)]="laundry._pickup_time_to">
+                                <mat-option *ngFor="let h of getTimeTo(laundry._pickup_time_from, 21)" [value]="h">{{ h > 12 ? h-12 : h }} {{ h > 11 ? 'PM':'AM' }}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field class="full-width" *ngIf="laundry.wash_type">
+                            <mat-select placeholder="Due Time" [(ngModel)]="laundry.min_due_time" (selectionChange)="laundry.due_time = laundry.min_due_time + (laundry.min_due_time > 18 ? 1:2)">
+                                <mat-option *ngFor="let h of getTimeTo(8, 20)" [value]="h">{{ h > 12 ? h-12 : h }} {{ h > 11 ? 'PM':'AM' }}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                          <mat-form-field class="full-width" *ngIf="laundry.wash_type">
+                            <mat-select placeholder="Max Due Time" [(ngModel)]="laundry.due_time">
+                                <mat-option *ngFor="let h of getTimeTo(laundry.min_due_time)" [value]="h">{{ h > 12 ? h-12 : h }} {{ h > 11 ? 'PM':'AM' }}</mat-option>
+                            </mat-select>
+                          </mat-form-field>
+                    </div>
+            </div>
+
+
+            <div class="row" *ngIf="laundry.wash_type > 0">
+
+              <div class="col-lg-7">
+                    <table class="table bg-dark text-white rounded" *ngIf="laundry.wash_type < 4">
+                      <tr>
+                        <td>RATES</td>
+                        <td [ngClass]="{'text-center': true, 'text-muted': laundry.regular_rate == 0 }">Regular <br> <span [ngClass]="{'clickable': current_user.is_administrator && laundry.regular_rate }" (click)="setRate('regular_rate')">{{ laundry.regular_rate ? laundry.regular_rate + '/kg' : 'Loading...' }}</span></td>
+                      <td [ngClass]="{'text-center': true, 'text-muted': laundry.beddings_rate == 0 }">Beddings <br> <span [ngClass]="{'clickable': current_user.is_administrator && laundry.beddings_rate }" (click)="setRate('beddings_rate')">{{ laundry.beddings_rate ? laundry.beddings_rate + '/kg' : 'Loading...' }}</span></td>
+                        <td>TOTALS</td>
+                      </tr>
+                      <tr>
+                          <td>KGS</td>
+                          <td>
+                            <!-- <mat-form-field class="text-center">
+                              <input min="0" placeholder="Regular" type="number" matInput [(ngModel)]="laundry.regular_kg" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                            </mat-form-field> -->
+                              <input min="0" class="form-control text-center" type="number" [(ngModel)]="laundry.regular_kg" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                          </td>
+                          <td>
+                            <!-- <mat-form-field class="text-center">
+                              <input min="0" placeholder="Beddings" type="number" matInput [(ngModel)]="laundry.beddings_kg" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                            </mat-form-field> -->
+                            <input min="0" type="number" class="form-control text-center" [(ngModel)]="laundry.beddings_kg" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                          </td>
+                          <td class="text-center">
+                              {{  laundry.total_weight | currency: ' ' }} {{  laundry.total_weight > 1 ? 'kg':'kgs' }}
+                          </td>
+                      </tr>
+                      <tr>
+                          <td>PCS</td>
+                          <td>
+                              <input min="0" class="form-control text-center" type="number" [(ngModel)]="laundry.regular_pieces" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                          </td>
+                          <td>
+                            <input min="0" type="number" class="form-control text-center" [(ngModel)]="laundry.beddings_pieces" (click)="computeCharges()" (keyup)="computeCharges()" (change)="computeCharges()" autocomplete="off">
+                          </td>
+                          <td class="text-center">
+                              {{  (laundry.regular_pieces + laundry.beddings_pieces) | number: '1.0-0'  }} pcs
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>AMOUNT</td>
+                        <td class="text-center">{{ (laundry.regular_kg * laundry.regular_rate) | currency:' ' }}</td>
+                        <td class="text-center">{{ (laundry.beddings_kg * laundry.beddings_rate) | currency:' ' }}</td>
+                        <td class="text-center">
+                            <strong class="p-1 border rounded bg-info">{{  laundry.wash_charge | currency: ' ' }}</strong>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <div *ngIf="laundry.wash_type == 4">
+                      <mat-form-field class="full-width">
+                        <mat-select placeholder="Washing Machine" [(ngModel)]="_washing_machine"  (selectionChange)="computeCharges()">
+                            <mat-option [value]="null">N/A</mat-option>
+                            <mat-option *ngFor="let m of config.washing_machines" [value]="m.id">{{ m.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <br>
+                      <mat-form-field class="full-width">
+                        <mat-select placeholder="Dryer" [(ngModel)]="_drying_machine"  (selectionChange)="computeCharges()">
+                            <mat-option [value]="null">N/A</mat-option>
+                            <mat-option *ngFor="let m of config.dryers" [value]="m.id">{{ m.name }}</mat-option>
+                        </mat-select>
+                      </mat-form-field>
+                      <br>
+                      <button mat-raised-button color="basic" (click)="showAddOnModal(addOnModal)" >Add Ons</button>
+                      <br><br>
+                    </div>
+
+
+                    <mat-checkbox class="full-width" [(ngModel)]="laundry.free_wifi_claimed"  (change)="computeCharges()" [disabled]="laundry.free_wifi_voucher <= 0">
+                        {{ laundry.free_wifi_voucher }} Wifi Voucher
+                    </mat-checkbox> &nbsp;&nbsp;
+                    <mat-checkbox [(ngModel)]="laundry.with_voucher" (change)="computeCharges()">
+                        with Voucher
+                    </mat-checkbox>  &nbsp;&nbsp;
+                    <mat-checkbox [(ngModel)]="laundry.for_delivery" (change)="deliveryChanges()">
+                        For Delivery
+                    </mat-checkbox>
+
+                    <mat-form-field>
+                      <mat-select [(ngModel)]="laundry.pickup_times" placeholder="Picked up" (selectionChange)="computeCharges()">
+                          <mat-option [value]="null" *ngIf="laundry.pickup_times">N/A</mat-option>
+                          <mat-option *ngFor="let h of [1, 2, 3, 4, 5, 6, 7, 8, 9]" [value]="h">{{ h }} {{ h > 1 ? "times" : "time" }}</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+
+
+
+              </div>
+
+              <div class="col-lg-5">
+
+                  <strong>Charges</strong>
+                  <table class="table table-striped">
+                    <tr *ngFor="let charge of laundry.charges">
+                      <td>{{ charge.name }}</td>
+                      <td [ngClass]="{'text-right': true, 'text-danger': (charge.amount < 0)}">{{ charge.amount ? (charge.amount | currency: ' ') : 'Free' }}</td>
+                    </tr>
+                    <tr *ngIf="laundry.total_add_ons > 0">
+                      <td class="text-muted">Existing Add On</td>
+                      <td class="text-right text-muted">{{ laundry.total_add_ons | currency: ' ' }}</td>
+                    </tr>
+                    <tr *ngIf="laundry.charges.length == 0 && laundry.total_add_ons == 0">
+                      <td colspan="2" class="text-muted">Empty</td>
+                    </tr>
+                    <tr *ngIf="laundry.charges.length > 0">
+                      <td class="text-right"><strong>TOTAL AMOUNT</strong></td>
+                      <td class="text-right text-primary">
+                        <strong>{{ (laundry.total + laundry.total_add_ons) | currency: ' '}}</strong>
+                      </td>
+                    </tr>
+                  </table>
+  <!--
+                  <br>
+
+                  <mat-form-field class="full-width">
+                      <input matInput type="number" [(ngModel)]="laundry.initial_payment" placeholder="Initial Payment">
+                  </mat-form-field> -->
+                  <br>
+
+                  <mat-form-field class="full-width">
+                      <textarea matInput [(ngModel)]="laundry.remarks" placeholder="Remarks"></textarea>
+                  </mat-form-field>
+
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-lg-7">
+                <div *ngIf="laundry.wash_type > 0">
+                  <button mat-raised-button color="basic" (click)="showAddPhotoModal(addPhotoModal)"><i class="fa fa-plus"></i> Photo</button>
+                  <span *ngIf="images.length > 0">{{ images.length }} image{{ images.length > 1 ? 's':'' }} included</span>
+                </div>
+              </div>
+              <div class="col-lg-5 text-right">
+                  <button mat-raised-button routerLink="/laundry/{{ laundry.id }}" color="basic"><i class="fa fa-remove"></i> Cancel</button>
+                  <button mat-raised-button (click)="saveTransaction()" color="primary"  *ngIf="(laundry.transaction_type && laundry.wash_type && laundry.wash_charge > 0) || (laundry.transaction_type == 2 && !laundry.wash_type)"><i class="fa fa-save"></i> Save</button>
+              </div>
+            </div>
+
+
+          </fieldset>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+
+
+  <ng-template #addOnModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add Ons</h4>
+      <!-- <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button> -->
+    </div>
+    <div class="modal-body">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Qty</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of inventoryItems" [ngClass]="{'text-danger': item.add_on_count > item.no_of_stocks}">
+              <td>{{ item.name }}</td>
+              <td>{{ item.price }}</td>
+              <td>{{ item.no_of_stocks }}</td>
+              <td><input type="number" [disabled]="item.no_of_stocks == 0" [ngClass]="{'form-control text-center': true}" [(ngModel)]="item.add_on_count" max="{{ item.no_of_stocks }}" min="1"></td>
+            </tr>
+            <tr>
+              <td colspan="3">Total</td>
+              <td>{{ computeTotalAddOns() | currency: ' '}}</td>
+            </tr>
+          </tbody>
+        </table>
+  
+    </div>
+    <div class="modal-footer">
+        <button mat-raised-button color="basic" (click)="c();computeCharges()">Done</button>
+        <!-- <button mat-raised-button color="primary" >Save</button> -->
+    </div>
+  </ng-template>
+  
+  
+  
+
+<ng-template #addPhotoModal let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Add Photo</h4>
+      <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body text-center">
+        <div class="row">
+          <div class="col-lg-8">
+            <webcam height="400" width="400" [trigger]="triggerObservable" (imageCapture)="handleImage($event)" ></webcam>
+          </div>
+          <div class="col-lg-4">
+            <div class="laundry-images">
+              <img *ngFor="let image of images" class="laundry-image rounded" src="{{ image.imageAsDataUrl }}" alt="">
+            </div>
+          </div>
+        </div>
+    </div>
+    <div class="modal-footer" style="display:block">
+        <div class="row">
+          <div class="col-lg-6">
+            <button mat-raised-button class="pull-left" *ngIf="images.length > 0" color="error" (click)="images = []">Clear All</button>
+          </div>
+          <div class="col-lg-6 text-right">
+              <button mat-raised-button color="basic" (click)="c()">Close</button>
+              <button mat-raised-button color="basic" (click)="triggerSnapshot()">Capture</button>
+          </div>
+        </div>
+    </div>
+  </ng-template>
+  

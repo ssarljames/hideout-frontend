@@ -1,0 +1,23 @@
+
+<form [formGroup]="form" (ngSubmit)="saveCategory()">
+    <mat-card>
+      <mat-card-title>
+        <h2>New Item</h2>
+      </mat-card-title>
+      <mat-card-content>
+          <br><br>
+          <div class="row">
+            <div class="col-lg-6">
+              <mat-form-field class="full-width">
+                <input matInput  autocomplete="off" name="name" placeholder="Category Name" [formControlName]="'name'">
+                <mat-error *ngIf="form.controls.name.invalid">{{ form.controls.name.errors.required ? "This field is required" : form.controls.name.errors[0] }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" type="submit"><i class="fa fa-save"></i> Save</button>
+        <button mat-raised-button color="basic" routerLink="/inventory/categories" type="button"><i class="fa fa-remove"></i> Cancel</button>
+      </mat-card-actions>
+    </mat-card>
+</form>

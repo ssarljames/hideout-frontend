@@ -1,0 +1,63 @@
+<mat-card>
+  <mat-card-title>
+    <h2><i class="fa fa-users"></i> User Accounts
+      <button mat-raised-button color="primary" class="pull-right" routerLink="/users/create"><i class="fa fa-plus"></i> New User Account</button>
+    </h2>
+    <hr>
+  </mat-card-title>
+  <mat-card-content>
+      <div class="row">
+          <div class="col-lg-4">
+              <form name="form">
+
+                  <mat-form-field class="full-width">
+                    <input matInput type="text" name="q" autocomplete="off" (keyup)="fetchUsers($event)"  placeholder="Search" [(ngModel)]="queryParams.q">
+                    <button mat-button matSuffix mat-icon-button aria-label="Clear">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </form>
+          </div>
+          <div class="col-lg-4"></div>
+          <div class="col-lg-4">
+              <mat-paginator [length]="meta.total ? meta.total : 0"
+                  [pageSize]="queryParams.per_page"
+                  [pageSizeOptions]="[5, 10, 25, 100]"
+                  (page)="pageChange($event)">
+              </mat-paginator>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table matSort (matSortChange)="sortData($event)" class="table" >
+            <thead>
+              <tr>
+                <th mat-sort-header="users.username">Username</th>
+                <th mat-sort-header="users.fullname">Fullname</th>
+                <th mat-sort-header="users.role">Role</th>
+                <th mat-sort-header="user_groups.name">Group</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody [@fetch]="isFetching ? 'fetching':'done'">
+              <tr *ngFor="let user of users">
+                <td>
+                  <img src="{{ user.profile_picture_path }}" class="profile-picture circle-rounded" alt=""> 
+                  {{ user.username }}
+                </td>
+                <td>{{ user.fullname }}</td>
+                <td>
+                    {{ user.role_label }}
+                    <!-- <mat-chip-list>
+                      <mat-chip>{{ user.role_label }}</mat-chip>
+                    </mat-chip-list> -->
+                </td>
+                <td>{{ user.user_group?.name }}</td>
+                <td>
+                  <button matTooltip="Edit this user account" mat-button color="basic" routerLink="/users/{{ user.id }}/edit"><i class="fa fa-edit"></i> </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+  </mat-card-content>
+</mat-card>

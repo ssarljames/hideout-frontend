@@ -1,0 +1,29 @@
+<mat-card>
+  <mat-card-title>
+    <h2>
+      <i class="fa fa-shopping-cart"></i> Orders
+      <a routerLink="/snack-hauz/menus/" class="btn btn-primary pull-right">Manage Menus</a>
+    </h2>
+    <hr>
+  </mat-card-title>
+  <mat-card-content>
+    <table class="table table-bordered table-hover orders-table">
+      <thead>
+        <th>Order No</th>
+        <th>Customer / PC Station</th>
+        <th>Amount</th>
+        <th>Meals</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let order of orders" (click)="showOrder(order.id)" [ngClass]="{'text-muted': order.status == 0, 'text-success': order.status == 4}">
+          <td>{{ order.order_number }}</td>
+          <td>{{ order.customer_id ? order.customer.name : (order.computer_station ? order.computer_station.name : order.ip_address) }}</td>
+          <td class="text-right pr-2">{{ order.total_amount | currency: ' ' }}</td>
+          <td>
+            <span class="badge badge-primary mr-1" *ngFor="let meal of order.meals">{{ meal.name }}</span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card-content>
+</mat-card>

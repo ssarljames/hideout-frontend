@@ -1,0 +1,24 @@
+<mat-card>
+  <mat-card-title>
+    <h2>Item Categories
+
+        <button class="pull-right" routerLink="/inventory/categories/create" mat-raised-button color="basic"><i class="fa fa-plus"></i> New Category</button>
+    </h2>
+  </mat-card-title>
+  <mat-card-content>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>No. of Items </th>
+        </tr>
+      </thead>
+      <tbody  [@fetch]="isFetching ? 'fetching':'done'">
+        <tr *ngFor="let cat of categories">
+          <td>{{ cat.name }}</td>
+          <td>{{ cat.item_count }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </mat-card-content>
+</mat-card>

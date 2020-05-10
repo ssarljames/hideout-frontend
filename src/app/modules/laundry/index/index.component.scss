@@ -1,0 +1,53 @@
+.m5{
+    margin: 5px;
+}
+
+.blinking{
+    animation: blinking 1000ms infinite;
+}
+
+.bg-danger-light {
+    background: #ff99a3 !important;
+}
+
+@keyframes blinking{
+    0%{     
+    }
+    50%{  
+        background-color: transparent;
+        color: #333333;
+    }
+    100%{     
+    }
+}
+
+.no-shadow{
+    animation: none !important;
+}
+
+
+
+
+
+.circle{
+    height: 40px;
+    width: 40px;
+    vertical-align: middle !important;
+    text-align: center !important;
+    margin: 0 auto;
+    padding-top: 4px !important;
+    border: 5px solid transparent;
+}
+
+.highlight{
+    background: rgb(193, 193, 255) !important;
+}
+
+td{
+    font-size: 15px !important;
+}
+
+
+.laundry-image-fullview{
+    max-height: 350px;
+}

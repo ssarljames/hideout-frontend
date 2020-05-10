@@ -1,0 +1,10 @@
+<!-- <nav class="navbar navbar-expand-sm bg-dark navbar-dark"> -->
+  <br>
+  <br>
+  <br>
+  <ul class="navbar-nav">
+    <li class="nav-item" *ngFor="let item of menu.getMenuitem()" >
+      <a class="nav-link" routerLinkActive="active" *ngIf="isAllowed(item.roles, item.user_groups)" routerLink="{{ item.state }}"><i class="{{ item.icon }}"></i> {{ item.name }} <span matTooltip="For approvals" *ngIf="item.state == '/cash-counts' && for_approvals > 0" class="badge badge-danger">{{ for_approvals }}</span></a>
+    </li>
+  </ul>
+<!-- </nav> -->

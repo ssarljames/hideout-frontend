@@ -1,0 +1,28 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Set Payment</h4>
+  <button type="button" class="close" aria-label="Close" (click)="d('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body">
+    <mat-form-field class="full-width">
+      <input type="text" matInput name="total_amount" [value]="laundry.remaining_balance" disabled placeholder="Remaining Balance">
+    </mat-form-field>
+    <mat-form-field class="full-width">
+      <mat-select name="payment_method" [disabled]="payment_methods.length == 0" (selectionChange)="paymentMethodChanged()" placeholder="Payment Method" [(ngModel)]="laundry.payment_method">
+          <mat-option *ngFor="let method of payment_methods" [value]="method.value">{{ method.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="full-width" *ngIf="laundry.payment_method == 1">
+      <input name="cash_received" (keyup)="savePayment($event)" type="number" id="_cash_received" [(ngModel)]="cash_received" autocomplete="off" matInput placeholder="Enter Cash Received  ">
+    </mat-form-field>
+    <br>
+    <span [ngClass]="{'p-2 rounded text-white': true, 'bg-warning': (laundry.remaining_balance-cash_received) > 0, 'bg-primary': (laundry.remaining_balance-cash_received) <= 0}" *ngIf="cash_received">{{ (laundry.remaining_balance-cash_received) > 0 ? 'Balance: ' + (laundry.remaining_balance-cash_received) : 'Change: ' + -1 * (laundry.remaining_balance-cash_received)  }}</span>
+    <span class="p-2 rounded text-white bg-danger" *ngIf="!cash_received">Enter cash</span>
+    <br>
+    <span *ngIf="laundry.payment_method == 2 && customer">Available: {{ customer.available_points | currency: ' ' }}</span>
+</div>
+<div class="modal-footer">
+    <button mat-raised-button color="basic" (click)="d()">Close</button>
+    <button mat-raised-button type="submit" color="primary" [disabled]="laundry.payment_method == 1 && !cash_received" (click)="savePayment()">Save</button>
+</div>

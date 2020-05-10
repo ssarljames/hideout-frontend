@@ -1,0 +1,39 @@
+# #RewriteEngine on
+# #RewriteCond %{REQUEST_FILENAME} !-f
+# #RewriteCond %{REQUEST_FILENAME} !-d
+
+# # not rewrite css, js and images
+# #RewriteCond %{REQUEST_URI} !\.(?:css|js|map|jpe?g|gif|png)$ [NC]
+# #RewriteRule ^(.*)$ /index.html?path=$1 [NC,L,QSA]
+
+# <IfModule mod_rewrite.c>
+#     <IfModule mod_negotiation.c>
+#         Options -MultiViews -Indexes
+#     </IfModule>
+
+#     RewriteEngine On
+
+#     # Handle Authorization Header
+#     # RewriteCond %{HTTP:Authorization} .
+#     # RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+#     # Redirect Trailing Slashes If Not A Folder...
+#     RewriteCond %{REQUEST_FILENAME} !-d
+#     RewriteCond %{REQUEST_URI} (.+)/$
+#     RewriteRule ^ %1 [L,R=301]
+
+#     # Handle Front Controller...
+#     RewriteCond %{REQUEST_FILENAME} !-d
+#     RewriteCond %{REQUEST_FILENAME} !-f
+#     RewriteRule ^ index.html [L]
+# </IfModule>
+
+
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} -s [OR]
+RewriteCond %{REQUEST_FILENAME} -l [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^.*$ - [NC,L]
+RewriteRule ^(.*) index.html [NC,L]
+
+# .htaccess needs to be enabled with AllowOverride. Change the file /etc/apache2/apache2.conf, edit AllowOverride from None to ALL

@@ -1,0 +1,29 @@
+mat-form-field{
+    margin-right: 20px !important;
+}
+
+
+td, th{
+    vertical-align: middle !important;
+    padding: 10px !important;
+}
+
+fieldset{
+    font-size: 14px !important;
+}
+
+
+.laundry-image{
+    max-width: 200px;
+    display: block;
+    margin: 10px;
+    border-radius: 5px;
+}
+
+.laundry-images{
+    width: 100%;
+    max-height: 300px;
+    
+    overflow-y: scroll;
+    white-space:nowrap;
+}

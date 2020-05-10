@@ -1,0 +1,28 @@
+<mat-card>
+  <mat-card-title>
+    <h1>Sms</h1>
+  </mat-card-title>
+  <mat-card-content>
+
+
+
+      <mat-tab-group animationDuration="0ms">
+          <mat-tab label="Outbox">
+            <ng-template matTabContent>
+              <app-outbox></app-outbox>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Inbox">
+            <ng-template matTabContent>
+              <app-inbox></app-inbox>
+            </ng-template>
+          </mat-tab>
+          <mat-tab label="Device Information">
+            <ng-template matTabContent>
+              <app-device-information></app-device-information>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+
+  </mat-card-content>
+</mat-card>

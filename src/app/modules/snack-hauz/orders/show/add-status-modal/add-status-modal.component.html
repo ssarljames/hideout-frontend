@@ -1,0 +1,18 @@
+<div class="modal-header" *ngIf="statusAvailable.length > 0">
+  <h5 class="modal-title text-center">Add New Action</h5>
+</div>
+<div class="modal-body">
+  <div *ngIf="statusAvailable.length > 0">
+
+    <button *ngFor="let status of statusAvailable;" [ngClass]="{'btn btn-lg btn-block ': true }" [class]="(meal.pivot.status != status.value) ? 'btn-outline-'+status.color : 'btn-' + status.color" (click)="selectStatus(status)" >
+      <i [class]="status.icon + ' pull-left'"></i>
+      {{ status.label }}
+    </button>
+
+  </div>
+  <ellipsis-loading *ngIf="statusAvailable.length == 0"></ellipsis-loading>
+</div>
+<!-- <div class="modal-footer p-2" *ngIf="statusAvailable.length > 0">
+  <button type="button" class="btn btn-success" (click)="close()"><i class="fa fa-check"></i> Confirm</button>
+  <button type="button" class="btn btn-default" (click)="dismiss()"><i class="fa fa-remove"></i> Cancel</button>
+</div> -->

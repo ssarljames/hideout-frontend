@@ -1,0 +1,51 @@
+
+<form [formGroup]="form" (ngSubmit)="saveUser()">
+    <mat-card>
+      <mat-card-title>
+        <h2>New User Account</h2>
+      </mat-card-title>
+      <mat-card-content>
+          <br>
+          <div class="row">
+
+            <div class="col-lg-4">
+                <div class="text-center">
+                      <label>Profile Picture <small class="text-muted">(Click image to change)</small> </label>
+                      <br>
+                      <img src="{{ imageSrc }}" class="clickable rounded-circle" alt="" id="profile-pic-preview" (click)="openBrowseFile($event)">
+                      <input autocomplete="off" id="profile_pic" accept="image/*" type="file" name="profile_pic" class="d-none" (change)="onFileChange($event)" placeholder="Profile Picture">
+                </div>
+            </div>
+  
+            <div class="col-lg-4">
+              <mat-form-field class="full-width">
+                <input matInput  autocomplete="off" name="username" placeholder="Username" [formControlName]="'username'">
+                <mat-error *ngIf="form.controls.username.invalid">{{ form.controls.username.errors.required ? "This field is required" : form.controls.username.errors[0] }}</mat-error>
+              </mat-form-field>
+              <mat-form-field class="full-width">
+                <input matInput  autocomplete="off" name="fullname" placeholder="Fullname" [formControlName]="'fullname'">
+                <mat-error *ngIf="form.controls.fullname.invalid">{{ form.controls.fullname.errors.required ? "This field is required" : form.controls.fullname.errors[0] }}</mat-error>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-select placeholder="Group" name="user_group_id" [formControlName]="'user_group_id'" >
+                  <mat-option *ngFor="let group of groups" [value]="group.id">{{ group.name }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls.user_group_id.invalid">{{ form.controls.user_group_id.errors.required ? "This field is required" : form.controls.user_group_id.errors[0] }}</mat-error>
+              </mat-form-field>
+              <br>
+              <mat-form-field>
+                <mat-select placeholder="Role" name="role" [formControlName]="'role'" >
+                  <mat-option *ngFor="let role of roles" [value]="role.value">{{ role.label }}</mat-option>
+                </mat-select>
+                <mat-error *ngIf="form.controls.role.invalid">{{ form.controls.role.errors.required ? "This field is required" : form.controls.role.errors[0] }}</mat-error>
+              </mat-form-field>
+              <div class="text-center">
+                  <button mat-raised-button color="primary" type="submit"><i class="fa fa-save"></i> Save</button>
+                  <button mat-raised-button color="basic" routerLink="/users" type="button"><i class="fa fa-remove"></i> Cancel</button>
+              </div>
+            </div>
+          </div>
+
+      </mat-card-content>
+    </mat-card>
+</form>

@@ -1,0 +1,21 @@
+
+<div class="modal-header">
+  <h4 class="modal-title">User Group Information</h4>
+</div>
+<div class="modal-body">
+  <div *ngIf="selectedUserGroup">
+    <div class="form-group">
+      <label for="Name" class="control-label">Name</label>
+      <input type="text" class="form-control" [(ngModel)]="selectedUserGroup.name" maxlength="20">
+    </div>
+    <div class="form-check">
+      <input type="checkbox" class="form-check-input" [(ngModel)]="selectedUserGroup.ignore_to_cash_count_report">
+      <label class="form-check-label">Ignore to Cash Count Report</label>
+    </div>
+  </div>
+  <ellipsis-loading *ngIf="!selectedUserGroup"></ellipsis-loading>
+</div>
+<div class="modal-footer" *ngIf="selectedUserGroup">
+  <button type="button" class="btn btn-light" (click)="dismiss()"><i class="fa fa-remove"></i> Close</button>
+  <button type="button" class="btn btn-success" (click)="saveUserGroup()"><i class="fa fa-save"></i> Save</button>
+</div>
