@@ -1,5 +1,8 @@
 
 #meal-image-preview{
   max-width: 100px;
-  height: 100px;
+  min-width: 50px;
+  min-height: 50px;
+  max-height: 100px;
+  border: 1px solid #ccc;
 }

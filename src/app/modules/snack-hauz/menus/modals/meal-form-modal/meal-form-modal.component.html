@@ -92,7 +92,7 @@
               <br>
               <mat-card *ngIf="selectedMeal.meal_category_id > 1">
                 <mat-card-title>
-                      <strong>Drinks <span *ngIf="selectedMeal?.drinks?.length > 0">({{ selectedMeal.drinks.length }})</span></strong>
+                      <strong>Addons <span *ngIf="selectedMeal?.addons?.length > 0">({{ selectedMeal.addons.length }})</span></strong>
                 </mat-card-title>
                 <mat-card-content>
                       <table class="table">
@@ -100,24 +100,24 @@
                           <th style="width: 40%">Name</th>
                           <th style="width: 20%">Add On Price</th>
                         </thead>
-                        <tr *ngFor="let item of selectedMeal.drinks;">
-                          <td>{{ item.name }} <span class="fa fa-exclamation-triangle text-danger clickable" matTooltip="This drink is currently unavailable" *ngIf="!item.available"></span></td>
+                        <tr *ngFor="let item of selectedMeal.addons;">
+                          <td>{{ item.name }} <span class="fa fa-exclamation-triangle text-danger clickable" matTooltip="This addon is currently unavailable" *ngIf="!item.available"></span></td>
                           <td>
-                            <input min="0" class="form-control" [ngModelOptions]="{standalone: true}" type="number" [(ngModel)]="item.add_on_price">
+                            <input min="0" class="form-control" [ngModelOptions]="{standalone: true}" type="number" [(ngModel)]="item.pivot.add_on_price">
                           </td>
                         </tr>
-                        <tr *ngIf="selectedMeal.drinks.length == 0">
-                          <td class="text-muted" colspan="4">No drinks included in this meal</td>
+                        <tr *ngIf="selectedMeal.addons.length == 0">
+                          <td class="text-muted" colspan="4">No addons included in this meal</td>
                         </tr>
 
                       </table>
                       <div class="row">
                         <div class="col-lg-6">
                             <mat-form-field class="full-width" >
-                              <input [formControl]="drinksAutoComplete" type="text" placeholder="Add Drink" matInput [matAutocomplete]="autoDrink">
-                              <mat-autocomplete autoActiveFirstOption [displayWith]="displayDrinkFn" #autoDrink="matAutocomplete" (optionSelected)="selectDrink($event)">
-                                <mat-option *ngFor="let drink of drinks$ | async" [value]="drink">
-                                    {{ drink.name | titlecase}}
+                              <input [formControl]="addonsAutoComplete" type="text" placeholder="Add addon" matInput [matAutocomplete]="autoaddon">
+                              <mat-autocomplete autoActiveFirstOption [displayWith]="displayaddonFn" #autoaddon="matAutocomplete" (optionSelected)="selectaddon($event)">
+                                <mat-option *ngFor="let addon of addons$ | async" [value]="addon">
+                                    {{ addon.name | titlecase}}
                                 </mat-option>
                               </mat-autocomplete>
                               <button mat-button matSuffix mat-icon-button aria-label="Clear">

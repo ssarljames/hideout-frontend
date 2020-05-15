@@ -14,5 +14,5 @@ export const environment = {
     logout: api + '/logout'
   },
   websocket: host + ':6001',
-  version: '1.4'
+  version: '1.4.1'
 };

@@ -26,8 +26,8 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
   inventoryItems$: Observable<any> = null;
 
 
-  drinksAutoComplete: FormControl;
-  drinks$: Observable<Meal> = null;
+  addonsAutoComplete: FormControl;
+  addons$: Observable<Meal> = null;
 
   isFetchingMeal: boolean = false;
 
@@ -40,7 +40,7 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
 
 
               this.inventoryItemNameAutoComplete = new FormControl('');
-              this.drinksAutoComplete = new FormControl('');
+              this.addonsAutoComplete = new FormControl('');
 
               this.mealForm = new FormGroup({
                 id: new FormControl(),
@@ -81,14 +81,14 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
           }
     ));
 
-    this.drinks$ = this.drinksAutoComplete.valueChanges.pipe(
+    this.addons$ = this.addonsAutoComplete.valueChanges.pipe(
       startWith(''),
       debounceTime(300),
       switchMap(value => {
         if (value !== '' && typeof value === typeof '') {
           return this.mealService.query({
             params: {
-              category: 'drinks',
+              exclude_meal_id: this.selectedMeal ? this.selectedMeal.id : null,
               availability: 'all',
               q: value
             }
@@ -112,8 +112,8 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
     return inventoryItem ? inventoryItem.name : undefined;
   }
 
-  displayDrinkFn(drink: Meal): string{
-    return drink ? drink.name : undefined;
+  displayaddonFn(addon: Meal): string{
+    return addon ? addon.name : undefined;
   }
 
   selectInventoryItem(e: MatAutocompleteSelectedEvent){
@@ -135,20 +135,25 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
     this.inventoryItemNameAutoComplete.setValue('');
   }
 
-  selectDrink(e: MatAutocompleteSelectedEvent): void{
+  selectaddon(e: MatAutocompleteSelectedEvent): void{
 
     let found = false;
-    this.selectedMeal.drinks.forEach( item => {
+    this.selectedMeal.addons.forEach( item => {
       found = found || item.id == e.option.value.id;
     })
 
+    console.log(e);
+    
+
     if(!found){
       let obj = e.option.value;
-      obj.add_on_price = 0;
-      this.selectedMeal.drinks.push(obj);
+      obj.pivot = { 
+        add_on_price:  0
+      }
+      this.selectedMeal.addons.push(obj);
     }
 
-    this.drinksAutoComplete.setValue('');
+    this.addonsAutoComplete.setValue('');
   }
 
   fetchMeal(){
@@ -169,7 +174,7 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
       this.mealForm.controls.meal_category_id.setValue(this.meal_category_id);
 
       this.selectedMeal.inventory_items = [];
-      this.selectedMeal.drinks = [];
+      this.selectedMeal.addons = [];
 
       return;
     }
@@ -199,12 +204,12 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
           this.selectedMeal.inventory_items = [];
 
 
-        if(this.selectedMeal.drinks)
-          this.selectedMeal.drinks.forEach( item => {
-            item.add_on_price = item.pivot.add_on_price;
+        if(this.selectedMeal.addons)
+          this.selectedMeal.addons.forEach( item => {
+            item.pivot.add_on_price = item.pivot.add_on_price;
           });
         else
-          this.selectedMeal.drinks = [];
+          this.selectedMeal.addons = [];
 
       }
     )
@@ -259,7 +264,7 @@ export class MealFormModalComponent implements OnInit, OnChanges, OnDestroy {
 
 
     form.append('inventory_items', JSON.stringify(this.selectedMeal.inventory_items));
-    form.append('drinks', JSON.stringify(this.selectedMeal.drinks));
+    form.append('addons', JSON.stringify(this.selectedMeal.addons));
 
     if(this.imageFile)
       form.append('image', this.imageFile);

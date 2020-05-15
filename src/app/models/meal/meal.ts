@@ -1,16 +1,24 @@
+
+
 export class Meal {
-  public id: string;
-  public name: string;
+  id: string;
+  name: string;
 
-  public meal_category_id: string;
+  meal_category_id: string;
 
-  public descrption: string;
-  public image_path_url: string;
-  public inventory_items: any[];
-  public drinks: any[];
-  public total_ordered: number;
+  descrption: string;
+  image_path_url: string;
+  inventory_items: any[];
+  drinks: any[];
+  total_ordered: number;
 
-  public preparation_time: number;
+  preparation_time: number;
 
-  public pivot: any;
+  addons: MealAddon[];
+}
+
+export class MealAddon extends Meal {
+  pivot: {
+    add_on_price: number;
+  }
 }

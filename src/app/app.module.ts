@@ -6,7 +6,7 @@ import { HttpClientModule, HTTP_INTERCEPTORS  } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, PreloadAllModules } from '@angular/router';
 
 
 //Installed 3rd Party Dependencies
@@ -89,6 +89,8 @@ export const MY_DATE_FORMATS = {
     TopNavComponent,
   ],
   imports: [
+    
+
     BrowserModule,
     BrowserAnimationsModule,
     HttpClientModule,
@@ -108,7 +110,10 @@ export const MY_DATE_FORMATS = {
     }),
 
 
-    RouterModule,
+    RouterModule.forRoot([], {
+      preloadingStrategy: PreloadAllModules
+    }),
+    
     ToastrModule.forRoot(toastrConfig) ,
 
     JwtModule,

@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { Component, OnInit, Input } from '@angular/core';
 import { OrderMealService } from 'app/services/order-meal';
 import { ModalService } from 'app/shared/services/modal/modal.service';
+import { MealOrdered } from 'app/models/order/order';
 
 @Component({
   selector: 'app-add-status-modal',
@@ -11,7 +12,7 @@ import { ModalService } from 'app/shared/services/modal/modal.service';
 })
 export class AddStatusModalComponent implements OnInit {
 
-  @Input() meal: Meal;
+  @Input() meal: MealOrdered;
 
   statusAvailable: any[] = [];
 
