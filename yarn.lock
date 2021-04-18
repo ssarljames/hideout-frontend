@@ -5416,19 +5416,19 @@ ngx-pagination@^3.2.1:
   resolved "https://registry.yarnpkg.com/ngx-pagination/-/ngx-pagination-3.2.1.tgz#d82fe15b03a628621dabb835ebc90011f2557689"
   integrity sha512-+dprQkYoiNYDZkNAe/1HX0wDFbwCTE31mC2bEQVdI7ZbjEIvGB7R3zp5QoCKgz6cPFatUj4Iw6Ukqp5zx0oT/Q==
 
-ngx-toastr@^9.1.1:
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-9.1.1.tgz#c7ec0284d13951422ccf47439a387372ddccc768"
-  integrity sha512-v43BmIXPmwMRx9Uv0ru2UaPQLA14gTsqWgXrO1DKC8RXnBGGoQEE48cVCaDX1GhaGM5GSzVO2s0o+nb688zsFw==
+ngx-toastr@^12.1.0:
+  version "12.1.0"
+  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-12.1.0.tgz#50f6eee4262f4ba342918f06f98a657f223194cf"
+  integrity sha512-rytCRBhvuudj614Kfj9GoIVQDrFuLvHSMP1YrMwTmR1SNkNJZOpGKmaSDCCBrNDkSrGouzMWBlFbl1UDBBsiqw==
   dependencies:
-    tslib "^1.9.0"
+    tslib "^1.10.0"
 
-ngx-webcam@^0.2.2:
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/ngx-webcam/-/ngx-webcam-0.2.2.tgz#fad4fea5dd24cd2ee8e5633a8d77c962fc1e9a9e"
-  integrity sha512-qkFIpNSVKrNIyy7QuVSvrgwAWfZ0k4oEoftRmtcWnrPZlta3ReCf+JX7DeSHisSms0DjFxleGoUzhQPjBJ4oOQ==
+ngx-webcam@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/ngx-webcam/-/ngx-webcam-0.3.2.tgz#5cbfecea0e0ed025b8e2bbd4b3ce09db3038c0b4"
+  integrity sha512-7imKrqc8b/CtLZ9g79fenCXcEwUxsi/4mdTnoSdwdbVHtU1pUmebxUNFPBEdEitiD09awGkcv2ZcgtqmJvIi8A==
   dependencies:
-    tslib "^1.9.0"
+    tslib "^2.0.0"
 
 nice-try@^1.0.4:
   version "1.0.5"
@@ -7739,9 +7739,19 @@ tslib@1.10.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.10.0.tgz#c3c19f95973fb0a62973fb09d90d961ee43e5c8a"
   integrity sha512-qOebF53frne81cf0S9B41ByenJ3/IuH8yJKngAX35CmiZySA0khhkovshKK+jGCaMnVomla7gVlIcc3EvKPbTQ==
 
+tslib@^1.10.0:
+  version "1.14.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
+  integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
+
 tslib@^1.7.1, tslib@^1.8.0, tslib@^1.8.1, tslib@^1.9.0:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.9.3.tgz#d7e4dd79245d85428c4d7e4822a79917954ca286"
+
+tslib@^2.0.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.2.0.tgz#fb2c475977e35e241311ede2693cee1ec6698f5c"
+  integrity sha512-gS9GVHRU+RGn5KQM2rllAlR3dU6m7AcpJKdtH8gFvQiC4Otgk98XnmMU+nZenHt/+VhnBPWwgrJsyrdcw6i23w==
 
 tslint@~5.11.0:
   version "5.11.0"
