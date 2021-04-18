@@ -34,43 +34,43 @@ const routes: Routes = [
         },
         {
           path: 'customers',
-          loadChildren: './modules/customers/customers.module#CustomersModule'
+          loadChildren: () => import('./modules/customers/customers.module').then(m => m.CustomersModule)
         },
         {
           path: 'vault',
-          loadChildren: './modules/vault/vault.module#VaultModule'
+          loadChildren: () => import('./modules/vault/vault.module').then(m => m.VaultModule)
         },
         {
           path: 'cash-counts',
-          loadChildren: './modules/cash-counts/cash-counts.module#CashCountsModule'
+          loadChildren: () => import('./modules/cash-counts/cash-counts.module').then(m => m.CashCountsModule)
         },
         {
           path: 'inventory',
-          loadChildren: './modules/inventory/inventory.module#InventoryModule'
+          loadChildren: () => import('./modules/inventory/inventory.module').then(m => m.InventoryModule)
         },
         {
           path: 'snack-hauz',
-          loadChildren: './modules/snack-hauz/snack-hauz.module#SnackHauzModule',
+          loadChildren: () => import('./modules/snack-hauz/snack-hauz.module').then(m => m.SnackHauzModule),
           canActivate: [SnackHauzStaffGuard]
         },
         {
           path: 'laundry',
-          loadChildren: './modules/laundry/laundry.module#LaundryModule',
+          loadChildren: () => import('./modules/laundry/laundry.module').then(m => m.LaundryModule),
           canActivate: [LaundryStaffGuard]
         },
         {
           path: 'users',
-          loadChildren: './modules/users/users.module#UsersModule',
+          loadChildren: () => import('./modules/users/users.module').then(m => m.UsersModule),
           canActivate: [AdminGuard]
         },
         {
           path: 'configurations',
-          loadChildren: './modules/configurations/configurations.module#ConfigurationsModule',
+          loadChildren: () => import('./modules/configurations/configurations.module').then(m => m.ConfigurationsModule),
           canActivate: [AdminGuard]
         },
         {
           path: 'sms',
-          loadChildren: './modules/sms/sms.module#SmsModule',
+          loadChildren: () => import('./modules/sms/sms.module').then(m => m.SmsModule),
           canActivate: [AdminGuard]
         },
         {

@@ -5,9 +5,9 @@ import { environment as e } from './environment.prod';
 
 
 
-const host = 'http://localhost';//'http://192.168.3.143';
-
-const api = host + ':8000/api/v1';
+const host = 'http://hideout.local';
+const port = '';
+const api = host + `${port}/api/v1`;
 
 export const environment = {
   production: false,

@@ -12,7 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'categories',
-    loadChildren: './category/category.module#InventoryCategoryModule'
+    loadChildren: () => import('./category/category.module').then(m => m.InventoryCategoryModule)
   },
   {
     path: 'create',

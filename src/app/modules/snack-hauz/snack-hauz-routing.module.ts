@@ -14,11 +14,11 @@ const routes: Routes = [
   },
   {
     path: 'menus',
-    loadChildren: './menus/menus.module#MenusModule'
+    loadChildren: () => import('./menus/menus.module').then(m => m.MenusModule)
   },
   {
     path: 'orders',
-    loadChildren: './orders/orders.module#OrdersModule'
+    loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule)
   }
 ];
 

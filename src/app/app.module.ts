@@ -1,40 +1,40 @@
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS  } from '@angular/common/http';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { FormsModule } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule, PreloadAllModules } from '@angular/router';
+import {MomentDateAdapter} from '@angular/material-moment-adapter';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgModule} from '@angular/core';
+import {HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import {FormsModule} from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
+import {RouterModule, PreloadAllModules} from '@angular/router';
 
 
-//Installed 3rd Party Dependencies
+// Installed 3rd Party Dependencies
 // import { MomentModule } from 'ngx-moment';
-import { JwtModule } from '@auth0/angular-jwt';
-import { NgProgressModule } from '@ngx-progressbar/core';
-import { NgProgressHttpModule } from '@ngx-progressbar/http';
-import { ToastrModule } from 'ngx-toastr';
+import {JwtModule} from '@auth0/angular-jwt';
+import {NgProgressModule} from '@ngx-progressbar/core';
+import {NgProgressHttpModule} from '@ngx-progressbar/http';
+import {ToastrModule} from 'ngx-toastr';
 
-import{ SocketIoEchoConfig, EchoService, ECHO_CONFIG, AngularLaravelEchoModule, EchoInterceptor } from 'angular-laravel-echo';
+import {SocketIoEchoConfig, EchoService, ECHO_CONFIG, AngularLaravelEchoModule, EchoInterceptor} from 'angular-laravel-echo';
 
-//App Components
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { SidenavComponent } from './components/sidenav/sidenav.component';
+// App Components
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {SidenavComponent} from './components/sidenav/sidenav.component';
 
-//App Interceptors
-import { JwtInterceptor,  } from 'app/core/interceptors/jwt.interceptor';
-import { ErrorInterceptor } from 'app/core/interceptors/error.interceptor';
-import { SharedModule } from './shared/shared.module';
+// App Interceptors
+import {JwtInterceptor,} from 'app/core/interceptors/jwt.interceptor';
+import {ErrorInterceptor} from 'app/core/interceptors/error.interceptor';
+import {SharedModule} from './shared/shared.module';
 
-import { NotFoundComponent } from './components/not-found/not-found.component';
-import { HomeComponent } from './components/home/home.component';
-import { LoginComponent } from './components/login/login.component';
-import { ContentComponent } from './components/content/content.component';
-import { environment } from 'environments/environment';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material';
-import { TopNavComponent } from './components/top-nav/top-nav.component';
+import {NotFoundComponent} from './components/not-found/not-found.component';
+import {HomeComponent} from './components/home/home.component';
+import {LoginComponent} from './components/login/login.component';
+import {ContentComponent} from './components/content/content.component';
+import {environment} from 'environments/environment';
+import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material';
+import {TopNavComponent} from './components/top-nav/top-nav.component';
 
 
 const toastrConfig = {
@@ -62,7 +62,7 @@ export const echoConfig: SocketIoEchoConfig = {
     broadcaster: 'socket.io',
     host: environment.websocket
   }
-}
+};
 /********************************************/
 
 
@@ -89,7 +89,7 @@ export const MY_DATE_FORMATS = {
     TopNavComponent,
   ],
   imports: [
-    
+
 
     BrowserModule,
     BrowserAnimationsModule,
@@ -102,31 +102,32 @@ export const MY_DATE_FORMATS = {
     NgProgressModule,
     NgProgressHttpModule.withConfig({
       silentApis: [
-                    `${environment.apiUrl}/notifications`,
-                    `${environment.apiUrl}/types`,
-                    `${environment.apiUrl}/laundries?summary=1`,
-                    `${environment.apiUrl}/cash-counts-for-approval`
-                  ]
+        `${environment.apiUrl}/notifications`,
+        `${environment.apiUrl}/types`,
+        `${environment.apiUrl}/laundries?summary=1`,
+        `${environment.apiUrl}/cash-counts-for-approval`
+      ]
     }),
 
 
     RouterModule.forRoot([], {
       preloadingStrategy: PreloadAllModules
     }),
-    
-    ToastrModule.forRoot(toastrConfig) ,
+
+    ToastrModule.forRoot(toastrConfig),
 
     JwtModule,
 
     AngularLaravelEchoModule.forRoot(echoConfig),
   ],
   providers: [
-        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-        {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE]},
 
-        {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS},
+    {provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS},
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
