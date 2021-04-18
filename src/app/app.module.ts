@@ -33,7 +33,7 @@ import {HomeComponent} from './components/home/home.component';
 import {LoginComponent} from './components/login/login.component';
 import {ContentComponent} from './components/content/content.component';
 import {environment} from 'environments/environment';
-import {DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE} from '@angular/material';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import {TopNavComponent} from './components/top-nav/top-nav.component';
 
 

@@ -1,5 +1,5 @@
 import { ModalService } from 'app/shared/services/modal/modal.service';
-import { MatCheckboxChange } from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { EchoService } from 'angular-laravel-echo';
 import { StateService } from 'app/core/state.service';
 import { Inbox } from 'app/models/sms/inbox/inbox';

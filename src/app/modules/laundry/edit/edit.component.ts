@@ -8,7 +8,7 @@ import { Observable, of, Subject } from 'rxjs';
 import { CustomerService } from '../../../services/customer';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
-import { MatAutocompleteSelectedEvent } from '@angular/material';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { Router, ActivatedRoute } from '@angular/router';

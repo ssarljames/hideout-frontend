@@ -10,7 +10,7 @@ import { LaundryService } from 'app/services/laundry';
 import { fetchAnimation } from 'app/animations/animations';
 import { EchoService } from 'angular-laravel-echo';
 import * as moment from 'moment';
-import { MatCheckboxChange } from '@angular/material';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 import { CustomerService } from 'app/services/customer';
 import { AddPaymentService } from '../add-payment-modal/add-payment.service';
 

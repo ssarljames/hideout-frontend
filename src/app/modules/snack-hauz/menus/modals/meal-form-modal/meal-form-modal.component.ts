@@ -1,4 +1,4 @@
-import { MatAutocompleteSelectedEvent } from '@angular/material';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { FormGroup, FormControl } from '@angular/forms';
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output } from '@angular/core';
 import { Meal } from 'app/models/meal/meal';

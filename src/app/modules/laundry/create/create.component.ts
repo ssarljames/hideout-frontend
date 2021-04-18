@@ -7,7 +7,7 @@ import { CustomerService } from '../../../services/customer';
 import { FormControl } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { startWith, debounceTime, switchMap } from 'rxjs/operators';
-import { MatAutocompleteSelectedEvent } from '@angular/material';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { environment } from 'environments/environment';
 import * as moment from 'moment';
 import { Router } from '@angular/router';
