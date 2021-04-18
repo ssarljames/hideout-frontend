@@ -1179,10 +1179,12 @@
     merge-source-map "^1.1.0"
     schema-utils "^2.7.0"
 
-"@ng-bootstrap/ng-bootstrap@^6.0.0":
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-6.2.0.tgz#0506d612ca6002bd8fa398d006fa2641013e11d4"
-  integrity sha512-wqwhnJFyEwvzWQJjXrEt+7oBTSvu2qPbdYvUFYhDVzOJLWB5M7YEhDAkMrfHQJ0pZNBMGr580FqYue+XiURY0Q==
+"@ng-bootstrap/ng-bootstrap@^8.0.0":
+  version "8.0.4"
+  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-8.0.4.tgz#bb88a466b2f84ff929fbb6d727b0f9a4d8f33704"
+  integrity sha512-EdxTwOPOtlvfnwrglPniulmzdnXdXH3lTGaGAY1HrYRvdtGg6wicRvl+BvwVE/3Qik5NPkOWMVghUHpv3evIYg==
+  dependencies:
+    tslib "^2.0.0"
 
 "@ngtools/webpack@10.2.3":
   version "10.2.3"
@@ -5850,12 +5852,12 @@ ngx-pagination@^3.2.1:
   resolved "https://registry.yarnpkg.com/ngx-pagination/-/ngx-pagination-3.2.1.tgz#d82fe15b03a628621dabb835ebc90011f2557689"
   integrity sha512-+dprQkYoiNYDZkNAe/1HX0wDFbwCTE31mC2bEQVdI7ZbjEIvGB7R3zp5QoCKgz6cPFatUj4Iw6Ukqp5zx0oT/Q==
 
-ngx-toastr@^12.1.0:
-  version "12.1.0"
-  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-12.1.0.tgz#50f6eee4262f4ba342918f06f98a657f223194cf"
-  integrity sha512-rytCRBhvuudj614Kfj9GoIVQDrFuLvHSMP1YrMwTmR1SNkNJZOpGKmaSDCCBrNDkSrGouzMWBlFbl1UDBBsiqw==
+ngx-toastr@^13.2.1:
+  version "13.2.1"
+  resolved "https://registry.yarnpkg.com/ngx-toastr/-/ngx-toastr-13.2.1.tgz#531bc7da6a524a861e0409bd2749878b3b3f8a3f"
+  integrity sha512-UAzp7/xWK9IXA2LsOmhpaaIGCqscvJokoQpBNpAMrjEkDeSlFf8PWQAuQY795KW0mJb3qF9UG/s23nsXfMYKmg==
   dependencies:
-    tslib "^1.10.0"
+    tslib "^2.0.0"
 
 ngx-webcam@^0.3.2:
   version "0.3.2"
