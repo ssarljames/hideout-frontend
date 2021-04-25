@@ -13,7 +13,9 @@ export class StateService {
       this.properties[name] = value;
     }
 
-    get(name: string) {
-      return this.properties[name];
+    get(name: string, defaultValue = null) {
+      return this.properties.hasOwnProperty(name)
+        ? this.properties[name]
+        : defaultValue;
     }
 }

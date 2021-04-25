@@ -63,9 +63,9 @@ export class ResourceService {
     return this.httpClient.get(`${this.host}/${this.resource}/${id}`);
   }
 
-  public query(queryOptions: {} = {}): Observable<any[]> {
+  public query(queryOptions: {} = {}): Observable<any> {
     return this.httpClient
-      .get<any[]>(`${this.host}/${this.resource}`, queryOptions)
+      .get<any>(`${this.host}/${this.resource}`, queryOptions)
       .pipe(map((response: any) => this.convertData(response)));
   }
 

@@ -11,14 +11,30 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { MenuItems } from './menu-items/menu-items';
 import { AlertModalComponent } from './alert-modal/alert-modal.component';
 import { PromptModalComponent } from './prompt-modal/prompt-modal.component';
+import {MaterialInputComponent} from './utils/material-input/material-input.component';
+import {MaterialTextareaComponent} from './utils/material-textarea/material-textarea.component';
+import {MaterialAutocompleteComponent} from './utils/material-autocomplete/material-autocomplete.component';
+import {MaterialDatepickerComponent} from './utils/material-datepicker/material-datepicker.component';
+import {MaterialAutocompleteChipComponent} from './utils/material-autocomplete-chip/material-autocomplete-chip.component';
+import {MaterialSelectComponent} from './utils/material-select/material-select.component';
 
+const FOR_EXPORT = [
+  EllipsisLoadingComponent,
+  ConfirmationModalComponent,
+  AlertModalComponent,
+  PromptModalComponent,
+  EllipsisLoadingComponent,
+  MaterialInputComponent,
+  MaterialTextareaComponent,
+  MaterialAutocompleteComponent,
+  MaterialSelectComponent,
+  MaterialDatepickerComponent,
+  MaterialAutocompleteChipComponent,
+]
 
 @NgModule({
   declarations: [
-    EllipsisLoadingComponent,
-    ConfirmationModalComponent,
-    AlertModalComponent,
-    PromptModalComponent
+    ...FOR_EXPORT
   ],
   imports: [
     CommonModule,
@@ -40,17 +56,16 @@ import { PromptModalComponent } from './prompt-modal/prompt-modal.component';
     NgxPaginationModule,
     PipeModule,
     EllipsisLoadingComponent,
-    PromptModalComponent
+    PromptModalComponent,
+    MaterialInputComponent,
+    MaterialTextareaComponent
   ],
   providers: [
     MenuItems,
     ModalService
   ],
   entryComponents: [
-    EllipsisLoadingComponent,
-    ConfirmationModalComponent,
-    AlertModalComponent,
-    PromptModalComponent
+    ...FOR_EXPORT
   ]
 })
 export class SharedModule { }

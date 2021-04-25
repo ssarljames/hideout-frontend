@@ -67,6 +67,14 @@ const MENUITEMS = [
     user_groups: [ADMINISTRATION, LAUNDRY_SHOP]
   },
   {
+    state: '/internet-service',
+    name: 'Internet Service',
+    type: 'link',
+    icon: 'fa fa-wifi',
+    roles: [],
+    user_groups: [ADMINISTRATION, LAUNDRY_SHOP]
+  },
+  {
     state: '/customers',
     name: 'Customers',
     type: 'link',

@@ -1,0 +1,24 @@
+<h2>
+  <i class="fa fa-wifi"></i>
+  Internet Service
+</h2>
+
+
+
+<mat-tab-group animationDuration="0ms" [selectedIndex]="1">
+  <mat-tab label="Subscriptions">
+    <ng-template matTabContent>
+      <app-subscriptions></app-subscriptions>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Internet Plans">
+    <ng-template matTabContent>
+      <app-internet-plans></app-internet-plans>
+    </ng-template>
+  </mat-tab>
+  <mat-tab label="Generate Bill">
+    <ng-template matTabContent>
+
+    </ng-template>
+  </mat-tab>
+</mat-tab-group>

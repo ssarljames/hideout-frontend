@@ -1,0 +1,15 @@
+<div [class]="'modal-header bg-primary text-white'">
+  <h5 class="modal-title text-center text-white">Create New Plan</h5>
+</div>
+<div class="modal-body">
+
+  <app-material-input [control]="form.controls.name" label="Name" class="w-100"></app-material-input>
+  <app-material-textarea [control]="form.controls.description" label="Description" class="w-100"></app-material-textarea>
+
+  <app-material-input [control]="form.controls.bill" label="Bill Amount" class="w-100"></app-material-input>
+
+</div>
+<div class="modal-footer p-2">
+  <button type="button" class="btn btn-primary"  (click)="save()"><i class="fa fa-check"></i> Save</button>
+  <button type="button" class="btn btn-primary"  (click)="close()"><i class="fa fa-remove"></i> Cancel</button>
+</div>

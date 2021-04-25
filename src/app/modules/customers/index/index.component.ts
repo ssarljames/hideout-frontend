@@ -13,7 +13,7 @@ import { Customer } from 'app/models/customer/customer';
   animations:[fetchAnimation]
 })
 export class CustomerIndexComponent implements OnInit, OnDestroy {
-  customers : Customer[] = [];
+  customers: Customer[] = [];
   meta: any = {};
 
   pageSizeOptions: number[] = [5, 10, 25, 100];

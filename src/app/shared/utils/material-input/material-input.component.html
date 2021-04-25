@@ -1,0 +1,13 @@
+<mat-form-field [class]="class" [appearance]="appearance">
+    <!-- <mat-icon matPrefix *ngIf="icon">{{ icon }}</mat-icon> -->
+    <mat-label>{{ label }}</mat-label>
+    <input matInput #input [formControl]="control" (keyup)="keyup($event)" [type]="type" autocomplete="off" [placeholder]="placeholder">
+    <mat-icon matSuffix *ngIf="icon && hasActionButton === false">{{ icon }}</mat-icon>
+
+    <button mat-icon-button matSuffix *ngIf="icon && hasActionButton" (click)="_actionButtonClicked()">
+      <mat-icon>{{ icon }}</mat-icon>
+    </button>
+
+    <mat-hint *ngIf="hint">{{ hint}}</mat-hint>
+    <mat-error *ngIf="control.errors">{{ control.errors.required ? 'Required' : (control.errors[0] ? control.errors[0] : 'Invalid input') }}</mat-error>
+</mat-form-field>

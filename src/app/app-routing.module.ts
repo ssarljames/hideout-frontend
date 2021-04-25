@@ -74,6 +74,11 @@ const routes: Routes = [
           canActivate: [AdminGuard]
         },
         {
+          path: 'internet-service',
+          loadChildren: () => import('./modules/internet-service/internet-service.module').then(m => m.InternetServiceModule),
+          canActivate: [AdminGuard]
+        },
+        {
           path: '',
           redirectTo: 'dashboard',
           pathMatch: 'full'
